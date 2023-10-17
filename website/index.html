@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <title>Octopus</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="app.js"></script>
+    </head>
+    <body onload="onload()" onunload="onunload()">
+        <table style="width:100%; height:100%;">
+            <tr>
+                <td style="width:70%;">
+                    <label for="input1">First input</label>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="range" value="0" id="input1" min="0" max="10" step="1" class="slider" oninput="onsliding(1)" onchange="onslider(1)">
+                </td>
+                <td style="text-align: center;">
+                    <input type="number" value="" style="width:50%;" id="feedback1" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:70%;">
+                    <label for="input2">Second input</label>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="range" value="0" id="input2" min="0" max="10" step="1" class="slider" oninput="onsliding(2)" onchange="onslider(2)">
+                </td>
+                <td style="text-align: center;">
+                    <input type="number" value="" style="width:50%;" id="feedback2" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:70%;">
+                    <label for="input3">Third input</label>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="range" value="0" id="input3" min="0" max="10" step="1" class="slider" oninput="onsliding(3)" onchange="onslider(3)">
+                </td>
+                <td style="text-align: center;">
+                    <input type="number" value="" style="width:50%;" id="feedback3" readonly>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

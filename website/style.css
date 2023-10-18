@@ -25,7 +25,17 @@ body
     height:100%;
 }
 
-td.range
+.range
 {
     width: 70%;
+}
+
+.feedback_td
+{
+    text-align: center;
+}
+
+.feedback
+{
+    width: 50%;
 }

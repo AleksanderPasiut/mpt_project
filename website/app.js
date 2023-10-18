@@ -1,7 +1,7 @@
 
 function onload()
 {
-    // setInterval(heartbeat, 1000)
+    setInterval(heartbeat, 100)
 }
 
 function onunload()
@@ -12,7 +12,7 @@ function onunload()
 var counter = 0;
 function heartbeat()
 {
-    console.log(counter++)
+
 }
 
 function onsliding(idx)

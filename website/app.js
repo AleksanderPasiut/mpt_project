@@ -9,10 +9,18 @@ function onunload()
     fetch('/terminate', { method: "POST" })
 }
 
-var counter = 0;
-function heartbeat()
+async function heartbeat()
 {
+    response = await fetch('/values.txt', { method: "GET" })
+    values_str = await response.text()
+    values = values_str.split(';')
 
+    for (idx = 0; idx < values.length; ++idx)
+    {
+        v = parseInt( values[idx] )
+        document.getElementById('input'+idx).value = v
+        document.getElementById('feedback'+idx).value = v
+    }
 }
 
 function onsliding(idx)
@@ -25,5 +33,5 @@ async function onslider(idx)
 {
     var label = 'input'+idx
     var v = document.getElementById(label).value;
-    fetch('value?'+label+'='+v, { method: "GET" })
+    await fetch('value?'+label+'='+v, { method: "GET" })
 }

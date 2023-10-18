@@ -8,10 +8,6 @@
 #include <regex>
 #include <iostream>
 
-
-
-
-
 static std::string_view get_content_type(const std::string& arg)
 {
     const std::size_t dot_idx = arg.find_last_of('.');
@@ -52,47 +48,34 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
     {
         if (method == "GET")
         {
-            std::regex re("/value\\?input([0-9]*)=([0-9\\.]*)");
-            std::match_results<std::string_view::iterator> res {};
-            if ( std::regex_match(resource.begin(), resource.end(), res, re) )
+            if (handle_parameter_set(ss, resource) == false)
             {
-                if (res.size() == 3)
+                if (handle_parameters_get(ss, resource) == false)
                 {
-                    size_t idx = std::stoi( res[1].str() );
-                    double value = std::stod( res[2].str() );
-
-                    // std::cout << idx << ' ' << value << '\n';
-                    if (idx < m_params.m_buffer.size())
+                    try
                     {
-                        m_params.m_buffer[idx] = value;
-                    }
-                }
-            }
-            else
-            {
-                try
-                {
-                    const std::filesystem::path path = resource_to_path(resource);
+                        const std::filesystem::path path = resource_to_path(resource);
 
-                    std::ifstream fs(path);
+                        std::ifstream fs(path);
 
-                    if (fs)
-                    {
-                        std::string_view content_type = get_content_type(path.string());
-                        ss << "HTTP/1.1 200 OK\n";
-                        ss << "Content-Type: " << content_type;
-                        ss << "\n\n";
-                        ss << fs.rdbuf();
-                        fs.close();
+                        if (fs)
+                        {
+                            std::string_view content_type = get_content_type(path.string());
+                            ss << "HTTP/1.1 200 OK\n";
+                            ss << "Content-Type: " << content_type;
+                            ss << "\n\n";
+                            ss << fs.rdbuf();
+                            fs.close();
+                        }
+                        else
+                        {
+                            send_error(ss, 404);
+                        }
                     }
-                    else
+                    catch (std::exception& e)
                     {
-                        send_error(ss, 404);
+                        send_error(ss, 500);
                     }
-                }
-                catch (std::exception& e)
-                {
-                    send_error(ss, 500);
                 }
             }
         }
@@ -146,4 +129,53 @@ void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
     }
 
     ss << "\n\n";
+}
+
+bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const std::string_view& resource)
+{
+    std::regex re("/value\\?input([0-9]*)=([0-9\\.]*)");
+    std::match_results<std::string_view::iterator> res {};
+    if ( std::regex_match(resource.begin(), resource.end(), res, re) )
+    {
+        if (res.size() == 3)
+        {
+            size_t idx = std::stoi( res[1].str() );
+            double value = std::stod( res[2].str() );
+
+            if (idx < m_params.m_buffer.size())
+            {
+                m_params.m_buffer[idx] = value;
+            }
+
+            send_error(ss, 200);
+        }
+        else
+        {
+            send_error(ss, 500);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& resource)
+{
+    if (resource == "/values.txt")
+    {
+        ss << "HTTP/1.1 200 OK\n";
+        ss << "Content-Type: text/plain\n\n";
+        
+        auto it = m_params.m_buffer.begin();
+        ss << *it;
+        for (++it; it != m_params.m_buffer.end(); ++it)
+        {
+            ss << ";" << *it;
+        }
+
+        return true;
+    }
+
+    return false;
 }

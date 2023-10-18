@@ -9,6 +9,11 @@
 #include <atomic>
 #include <filesystem>
 
+struct Params
+{
+    std::array<unsigned, 5> m_buffer {};
+};
+
 class ServerFileApplication
 {
 public:
@@ -38,4 +43,6 @@ private:
     std::filesystem::path m_root;
 
     std::string m_default_path;
+
+    Params m_params {};
 };

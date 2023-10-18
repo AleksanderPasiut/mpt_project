@@ -5,6 +5,12 @@
 #include "server.file_application.hpp"
 
 #include <fstream>
+#include <regex>
+#include <iostream>
+
+
+
+
 
 static std::string_view get_content_type(const std::string& arg)
 {
@@ -46,29 +52,48 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
     {
         if (method == "GET")
         {
-            try
+            std::regex re("/value\\?input([0-9]*)=([0-9\\.]*)");
+            std::match_results<std::string_view::iterator> res {};
+            if ( std::regex_match(resource.begin(), resource.end(), res, re) )
             {
-                const std::filesystem::path path = resource_to_path(resource);
-
-                std::ifstream fs(path);
-
-                if (fs)
+                if (res.size() == 3)
                 {
-                    std::string_view content_type = get_content_type(path.string());
-                    ss << "HTTP/1.1 200 OK\n";
-                    ss << "Content-Type: " << content_type;
-                    ss << "\n\n";
-                    ss << fs.rdbuf();
-                    fs.close();
-                }
-                else
-                {
-                    send_error(ss, 404);
+                    size_t idx = std::stoi( res[1].str() );
+                    double value = std::stod( res[2].str() );
+
+                    // std::cout << idx << ' ' << value << '\n';
+                    if (idx < m_params.m_buffer.size())
+                    {
+                        m_params.m_buffer[idx] = value;
+                    }
                 }
             }
-            catch (std::exception& e)
+            else
             {
-                send_error(ss, 500);
+                try
+                {
+                    const std::filesystem::path path = resource_to_path(resource);
+
+                    std::ifstream fs(path);
+
+                    if (fs)
+                    {
+                        std::string_view content_type = get_content_type(path.string());
+                        ss << "HTTP/1.1 200 OK\n";
+                        ss << "Content-Type: " << content_type;
+                        ss << "\n\n";
+                        ss << fs.rdbuf();
+                        fs.close();
+                    }
+                    else
+                    {
+                        send_error(ss, 404);
+                    }
+                }
+                catch (std::exception& e)
+                {
+                    send_error(ss, 500);
+                }
             }
         }
     });

@@ -8,6 +8,20 @@
         <table style="width:100%; height:100%;">
             <tr>
                 <td class="range">
+                    <label for="input0">Zeroth input</label>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="range" value="0" id="input0" min="0" max="100" step="1" class="slider" oninput="onsliding(0)" onchange="onslider(0)">
+                </td>
+                <td class="feedback_td">
+                    <input type="number" value="0" class="feedback" id="feedback0" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td class="range">
                     <label for="input1">First input</label>
                 </td>
                 <td></td>
@@ -60,20 +74,6 @@
                 </td>
                 <td class="feedback_td">
                     <input type="number" value="0" class="feedback" id="feedback4" readonly>
-                </td>
-            </tr>
-            <tr>
-                <td class="range">
-                    <label for="input5">Fifth input</label>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="range" value="0" id="input5" min="0" max="100" step="1" class="slider" oninput="onsliding(5)" onchange="onslider(5)">
-                </td>
-                <td class="feedback_td">
-                    <input type="number" value="0" class="feedback" id="feedback5" readonly>
                 </td>
             </tr>
         </table>

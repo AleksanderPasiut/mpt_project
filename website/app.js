@@ -1,3 +1,4 @@
+slider_busy_idx = -1
 
 function onload()
 {
@@ -17,20 +18,25 @@ async function heartbeat()
 
     for (idx = 0; idx < values.length; ++idx)
     {
-        v = parseInt( values[idx] )
-        document.getElementById('input'+idx).value = v
-        document.getElementById('feedback'+idx).value = v
+        if (idx != slider_busy_idx)
+        {
+            v = parseInt( values[idx] )
+            document.getElementById('input'+idx).value = v
+            document.getElementById('feedback'+idx).value = v
+        }
     }
 }
 
 function onsliding(idx)
 {
+    slider_busy_idx = idx
     var v = document.getElementById('input'+idx).value;
     document.getElementById('feedback'+idx).value = v;
 }
 
 async function onslider(idx)
 {
+    slider_busy_idx = -1
     var label = 'input'+idx
     var v = document.getElementById(label).value;
     await fetch('value?'+label+'='+v, { method: "GET" })

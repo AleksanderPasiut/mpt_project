@@ -41,6 +41,6 @@ private:
     OnConnectionNotifier m_on_connection_notifier;
     OnRequestNotifier m_on_request_notifier;
 
-    RequestBuffer m_request_buffer;
+    RequestBuffer<65536> m_request_buffer;
 };
 

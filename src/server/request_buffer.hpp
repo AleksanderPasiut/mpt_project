@@ -12,6 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //! @brief A buffer to store contents of the HTTP request
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<size_t request_buffer_capacity>
 class RequestBuffer
 {
 public:
@@ -34,7 +35,6 @@ public:
     }
 
 private:
-    static const size_t REQUEST_BUFFER_CAPACITY = 65536;
-    std::array<char, REQUEST_BUFFER_CAPACITY> m_request_buffer {};
+    std::array<char, request_buffer_capacity> m_request_buffer {};
     std::string_view m_request_buffer_view { m_request_buffer.data(), 0 };
 };

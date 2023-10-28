@@ -35,13 +35,13 @@ public:
     void set_default_path(const std::string& default_path);
 
 private:
-    std::filesystem::path convert_resource_to_path(const std::string_view& resource) const;
+    std::filesystem::path convert_uri_to_path(const std::string_view& uri) const;
 
     void send_error(std::stringstream& ss, unsigned code);
 
-    bool handle_parameter_set(std::stringstream& ss, const std::string_view& resource);
+    bool handle_parameter_set(std::stringstream& ss, const std::string_view& uri);
 
-    bool handle_parameters_get(std::stringstream& ss, const std::string_view& resource);
+    bool handle_parameters_get(std::stringstream& ss, const std::string_view& uri);
 
     Server m_server;
 

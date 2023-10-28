@@ -20,12 +20,12 @@ void OnRequestNotifier::execute(std::stringstream& ss, const std::string_view& r
         if (results.size() == 4)
         {
             const std::string_view method( results[1].first, results[1].length() );
-            const std::string_view resource( results[2].first, results[2].length() );
+            const std::string_view uri( results[2].first, results[2].length() );
             const std::string_view protocol( results[3].first, results[3].length() );
 
             if (protocol == "HTTP/1.1")
             {
-                m_callback( std::ref(ss), std::cref(method), std::cref(resource) );
+                m_callback( std::ref(ss), std::cref(method), std::cref(uri) );
             }
         }
     }

@@ -37,17 +37,17 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
     m_shutdown_request.test_and_set();
 
     m_server.set_on_request_callback(
-        [this](std::stringstream& ss, const std::string_view& method, const std::string_view& resource) -> void
+        [this](std::stringstream& ss, const std::string_view& method, const std::string_view& uri) -> void
     {
         if (method == "GET")
         {
-            if (handle_parameter_set(ss, resource) == false)
+            if (handle_parameter_set(ss, uri) == false)
             {
-                if (handle_parameters_get(ss, resource) == false)
+                if (handle_parameters_get(ss, uri) == false)
                 {
                     try
                     {
-                        const std::filesystem::path path = convert_resource_to_path(resource);
+                        const std::filesystem::path path = convert_uri_to_path(uri);
 
                         std::ifstream fs(path);
 
@@ -98,14 +98,14 @@ void ServerFileApplication::set_default_path(const std::string& default_path)
     m_default_path = default_path;
 }
 
-std::filesystem::path ServerFileApplication::convert_resource_to_path(const std::string_view& resource) const
+std::filesystem::path ServerFileApplication::convert_uri_to_path(const std::string_view& uri) const
 {
-    if (resource == "/" && m_default_path != "")
+    if (uri == "/" && m_default_path != "")
     {
         return m_root / m_default_path;
     }
 
-    return m_root / std::filesystem::path(resource.substr(1, resource.size() - 1));
+    return m_root / std::filesystem::path(uri.substr(1, uri.size() - 1));
 }
 
 void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
@@ -124,11 +124,11 @@ void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
     ss << "\n\n";
 }
 
-bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const std::string_view& resource)
+bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const std::string_view& uri)
 {
     std::regex re("/value\\?input([0-9]*)=([0-9\\.]*)");
     std::match_results<std::string_view::iterator> res {};
-    if ( std::regex_match(resource.begin(), resource.end(), res, re) )
+    if ( std::regex_match(uri.begin(), uri.end(), res, re) )
     {
         if (res.size() == 3)
         {
@@ -153,9 +153,9 @@ bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const st
     return false;
 }
 
-bool ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& resource)
+bool ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& uri)
 {
-    if (resource == "/values.txt")
+    if (uri == "/values.txt")
     {
         ss << "HTTP/1.1 200 OK\n";
         ss << "Content-Type: text/plain\n\n";

@@ -9,13 +9,18 @@
 #include <regex>
 #include <iostream>
 
+static const std::string_view get_string_view_from_string(const std::string& arg)
+{
+    return std::string_view( arg.data(), arg.size() );
+}
+
 static std::string_view get_extension(const std::string& arg)
 {
     const std::size_t dot_idx = arg.find_last_of('.');
 
     if (dot_idx != std::string::npos && dot_idx < arg.size())
     {
-        const std::string_view arg_view{ arg.data(), arg.size() };
+        const std::string_view arg_view = get_string_view_from_string(arg);
         return arg_view.substr(dot_idx + 1, arg_view.size() - dot_idx);
     }
 
@@ -54,12 +59,12 @@ public:
 
     std::string_view get_path() const
     {
-        return { m_path.data(), m_path.size() };
+        return get_string_view_from_string(m_path);
     }
 
     std::string_view get_query() const
     {
-        return { m_query.data(), m_query.size() };
+        return get_string_view_from_string(m_query);
     }
 
 private:
@@ -84,7 +89,10 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
 
             if (get_uri.get_path() == "/value")
             {
-                handle_parameter_set(ss, get_uri.get_query());
+                if (handle_parameter_set(ss, get_uri.get_query()) == false)
+                {
+                    send_error(ss, 500);
+                }
             }
             else if (get_uri.get_path() == "/values.txt")
             {
@@ -199,22 +207,15 @@ bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const st
     return false;
 }
 
-bool ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& path)
+void ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& path)
 {
-    if (path == "/values.txt")
+    ss << "HTTP/1.1 200 OK\n";
+    ss << "Content-Type: text/plain\n\n";
+    
+    auto it = m_params.m_buffer.begin();
+    ss << *it;
+    for (++it; it != m_params.m_buffer.end(); ++it)
     {
-        ss << "HTTP/1.1 200 OK\n";
-        ss << "Content-Type: text/plain\n\n";
-        
-        auto it = m_params.m_buffer.begin();
-        ss << *it;
-        for (++it; it != m_params.m_buffer.end(); ++it)
-        {
-            ss << ";" << *it;
-        }
-
-        return true;
+        ss << ";" << *it;
     }
-
-    return false;
 }

@@ -41,7 +41,7 @@ private:
 
     bool handle_parameter_set(std::stringstream& ss, const std::string_view& query);
 
-    bool handle_parameters_get(std::stringstream& ss, const std::string_view& path);
+    void handle_parameters_get(std::stringstream& ss, const std::string_view& path);
 
     Server m_server;
 

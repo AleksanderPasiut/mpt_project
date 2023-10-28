@@ -11,6 +11,40 @@
 #include <regex>
 #include <iostream>
 
+class CustomResponse
+{
+public:
+    CustomResponse(unsigned code) : m_code(code)
+    {}
+
+    CustomResponse(unsigned code, std::string_view content_type, std::string content)
+        : m_code(code)
+        , m_content_type(content_type)
+        , m_content(content)
+    {}
+
+    unsigned get_code() const
+    {
+        return m_code;
+    }
+
+    const std::string_view& get_content_type() const
+    {
+        return m_content_type;
+    }
+
+    const std::string& get_content() const
+    {
+        return m_content;
+    }
+
+private:
+    unsigned m_code;
+    std::string_view m_content_type;
+    std::string m_content;
+
+};
+
 static std::string_view get_extension(const std::string& arg)
 {
     const std::size_t dot_idx = arg.find_last_of('.');
@@ -28,6 +62,37 @@ static std::string_view get_content_type(const std::string& arg)
 {
     const std::string_view extension = get_extension(arg);
     return MimeTypeMap::get().get(extension);
+}
+
+static void fill_http_status_code(std::stringstream& ss, unsigned code)
+{
+    ss << "HTTP/1.1 " << code << ' ';
+
+    switch (code)
+    {
+        case 200: ss << "OK"; break;
+        case 403: ss << "FORBIDDEN"; break;
+        case 404: ss << "NOT FOUND"; break;
+        case 501: ss << "NOT IMPLEMENTED "; break;
+        default: ss << "INTERNAL SERVER ERROR"; break;
+    }
+
+    ss << '\n';
+}
+
+static void fill_custom_response(std::stringstream& ss, CustomResponse& resp)
+{
+    fill_http_status_code(ss, resp.get_code());
+
+    if (resp.get_content_type().size() > 0)
+    {
+        ss << "Content-Type: " << resp.get_content_type() << "\n\n";
+        ss << resp.get_content();
+    }
+    else
+    {
+        ss << '\n';
+    }
 }
 
 ServerFileApplication::ServerFileApplication(const std::string_view& port, const std::filesystem::path& root)
@@ -49,7 +114,7 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
             {
                 if (handle_parameter_set(ss, get_uri.get_query()) == false)
                 {
-                    send_error(ss, 500);
+                    fill_http_status_code(ss, 500);
                 }
             }
             else if (get_uri.get_path() == "/values.txt")
@@ -60,14 +125,14 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
             {
                 try
                 {
-                    const std::filesystem::path path = convert_uri_to_path(uri);
+                    const std::filesystem::path path = convert_uri_path_to_local_path(uri);
 
                     std::ifstream fs(path);
 
                     if (fs)
                     {
                         std::string_view content_type = get_content_type(path.string());
-                        ss << "HTTP/1.1 200 OK\n";
+                        fill_http_status_code(ss, 200);
                         ss << "Content-Type: " << content_type;
                         ss << "\n\n";
                         ss << fs.rdbuf();
@@ -75,12 +140,12 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
                     }
                     else
                     {
-                        send_error(ss, 404);
+                        fill_http_status_code(ss, 404);
                     }
                 }
                 catch (std::exception& e)
                 {
-                    send_error(ss, 500);
+                    fill_http_status_code(ss, 500);
                 }
             }
         }
@@ -110,7 +175,7 @@ void ServerFileApplication::set_default_path(const std::string& default_path)
     m_default_path = default_path;
 }
 
-std::filesystem::path ServerFileApplication::convert_uri_to_path(const std::string_view& uri) const
+std::filesystem::path ServerFileApplication::convert_uri_path_to_local_path(const std::string_view& uri) const
 {
     if (uri == "/" && m_default_path != "")
     {
@@ -122,18 +187,8 @@ std::filesystem::path ServerFileApplication::convert_uri_to_path(const std::stri
 
 void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
 {
-    ss << "HTTP/1.1 " << code << ' ';
-
-    switch (code)
-    {
-        case 200: ss << "OK"; break;
-        case 403: ss << "FORBIDDEN"; break;
-        case 404: ss << "NOT FOUND"; break;
-        case 501: ss << "NOT IMPLEMENTED "; break;
-        default: ss << "INTERNAL SERVER ERROR"; break;
-    }
-
-    ss << "\n\n";
+    fill_http_status_code(ss, code);
+    ss << '\n';
 }
 
 bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const std::string_view& query)
@@ -167,13 +222,20 @@ bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const st
 
 void ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& path)
 {
-    ss << "HTTP/1.1 200 OK\n";
-    ss << "Content-Type: text/plain\n\n";
-    
+    std::stringstream sst {};
+
     auto it = m_params.m_buffer.begin();
-    ss << *it;
+    sst << *it;
     for (++it; it != m_params.m_buffer.end(); ++it)
     {
-        ss << ";" << *it;
+        sst << ";" << *it;
     }
+
+    CustomResponse resp(200, "text/plain", sst.str());
+
+    fill_custom_response(ss, resp);
+    // fill_http_status_code(ss, 200);
+    // ss << "Content-Type: text/plain\n\n";
+    
+    
 }

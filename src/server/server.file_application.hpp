@@ -35,7 +35,7 @@ public:
     void set_default_path(const std::string& default_path);
 
 private:
-    std::filesystem::path convert_uri_to_path(const std::string_view& uri) const;
+    std::filesystem::path convert_uri_path_to_local_path(const std::string_view& uri) const;
 
     void send_error(std::stringstream& ss, unsigned code);
 

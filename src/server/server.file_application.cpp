@@ -28,6 +28,45 @@ static std::string_view get_content_type(const std::string& arg)
     return MimeTypeMap::get().get(extension);
 }
 
+class Uri
+{
+public:
+    Uri(const std::string_view& uri)
+    {
+        std::regex re { R"(^([^\?]*)(|\?([^\?]*))$)" };
+
+        std::match_results<std::string_view::iterator> res {};
+        if ( std::regex_match(uri.begin(), uri.end(), res, re) )
+        {
+            if (res.size() == 3) // query not present
+            {
+                m_path = res[1].str();
+                m_query = "";
+            }
+
+            if (res.size() == 4) // query present
+            {
+                m_path = res[1].str();
+                m_query = res[3].str();
+            }
+        }
+    };
+
+    std::string_view get_path() const
+    {
+        return { m_path.data(), m_path.size() };
+    }
+
+    std::string_view get_query() const
+    {
+        return { m_query.data(), m_query.size() };
+    }
+
+private:
+    std::string m_path;
+    std::string m_query;
+};
+
 ServerFileApplication::ServerFileApplication(const std::string_view& port, const std::filesystem::path& root)
     : m_server(port)
     , m_shutdown_request()
@@ -41,34 +80,41 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
     {
         if (method == "GET")
         {
-            if (handle_parameter_set(ss, uri) == false)
+            const Uri get_uri(uri);
+
+            if (get_uri.get_path() == "/value")
             {
-                if (handle_parameters_get(ss, uri) == false)
+                handle_parameter_set(ss, get_uri.get_query());
+            }
+            else if (get_uri.get_path() == "/values.txt")
+            {
+                handle_parameters_get(ss, get_uri.get_path());
+            }
+            else
+            {
+                try
                 {
-                    try
-                    {
-                        const std::filesystem::path path = convert_uri_to_path(uri);
+                    const std::filesystem::path path = convert_uri_to_path(uri);
 
-                        std::ifstream fs(path);
+                    std::ifstream fs(path);
 
-                        if (fs)
-                        {
-                            std::string_view content_type = get_content_type(path.string());
-                            ss << "HTTP/1.1 200 OK\n";
-                            ss << "Content-Type: " << content_type;
-                            ss << "\n\n";
-                            ss << fs.rdbuf();
-                            fs.close();
-                        }
-                        else
-                        {
-                            send_error(ss, 404);
-                        }
-                    }
-                    catch (std::exception& e)
+                    if (fs)
                     {
-                        send_error(ss, 500);
+                        std::string_view content_type = get_content_type(path.string());
+                        ss << "HTTP/1.1 200 OK\n";
+                        ss << "Content-Type: " << content_type;
+                        ss << "\n\n";
+                        ss << fs.rdbuf();
+                        fs.close();
                     }
+                    else
+                    {
+                        send_error(ss, 404);
+                    }
+                }
+                catch (std::exception& e)
+                {
+                    send_error(ss, 500);
                 }
             }
         }
@@ -124,11 +170,11 @@ void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
     ss << "\n\n";
 }
 
-bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const std::string_view& uri)
+bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const std::string_view& query)
 {
-    std::regex re("/value\\?input([0-9]*)=([0-9\\.]*)");
+    std::regex re( R"(^input([0-9]*)=([0-9\.]*)$)");
     std::match_results<std::string_view::iterator> res {};
-    if ( std::regex_match(uri.begin(), uri.end(), res, re) )
+    if ( std::regex_match(query.begin(), query.end(), res, re) )
     {
         if (res.size() == 3)
         {
@@ -153,9 +199,9 @@ bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const st
     return false;
 }
 
-bool ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& uri)
+bool ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& path)
 {
-    if (uri == "/values.txt")
+    if (path == "/values.txt")
     {
         ss << "HTTP/1.1 200 OK\n";
         ss << "Content-Type: text/plain\n\n";

@@ -3,36 +3,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "server.file_application.hpp"
+#include "mime_type_map.hpp"
 
 #include <fstream>
 #include <regex>
 #include <iostream>
 
-static std::string_view get_content_type(const std::string& arg)
+static std::string_view get_extension(const std::string& arg)
 {
     const std::size_t dot_idx = arg.find_last_of('.');
 
     if (dot_idx != std::string::npos && dot_idx < arg.size())
     {
-        const std::string extension = arg.substr(dot_idx + 1, arg.size() - dot_idx);
-
-        if (extension == "gif")
-        {
-            return "image/gif";
-        }
-
-        if (extension == "png")
-        {
-            return "image/png";
-        }
-
-        if (extension == "jpg")
-        {
-            return "image/jpeg";
-        }
+        const std::string_view arg_view{ arg.data(), arg.size() };
+        return arg_view.substr(dot_idx + 1, arg_view.size() - dot_idx);
     }
 
-    return "text/html";
+    return std::string_view();
+}
+
+static std::string_view get_content_type(const std::string& arg)
+{
+    const std::string_view extension = get_extension(arg);
+    return MimeTypeMap::get().get(extension);
 }
 
 ServerFileApplication::ServerFileApplication(const std::string_view& port, const std::filesystem::path& root)

@@ -47,7 +47,7 @@ static void fill_http_status_code(std::stringstream& ss, unsigned code)
     ss << '\n';
 }
 
-static void fill_custom_response(std::stringstream& ss, CustomResponse& resp)
+static void fill_custom_response(std::stringstream& ss, const CustomResponse& resp)
 {
     fill_http_status_code(ss, resp.get_code());
 
@@ -77,16 +77,10 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
         {
             const Uri get_uri(uri);
 
-            if (get_uri.get_path() == "/value")
+            auto it = m_custom_callbacks.find(std::string(get_uri.get_path()));
+            if (it != m_custom_callbacks.end())
             {
-                if (handle_parameter_set(ss, get_uri.get_query()) == false)
-                {
-                    fill_http_status_code(ss, 500);
-                }
-            }
-            else if (get_uri.get_path() == "/values.txt")
-            {
-                handle_parameters_get(ss, get_uri.get_path());
+                fill_custom_response(ss, (it->second)(get_uri.get_query()));
             }
             else
             {
@@ -142,6 +136,16 @@ void ServerFileApplication::set_default_path(const std::string& default_path)
     m_default_path = default_path;
 }
 
+void ServerFileApplication::reset_custom_handlers()
+{
+    m_custom_callbacks.clear();
+}
+    
+void ServerFileApplication::register_custom_handler(std::string path, CustomCallback callback)
+{
+    m_custom_callbacks[path] = callback;
+}
+
 std::filesystem::path ServerFileApplication::convert_uri_path_to_local_path(const std::string_view& uri) const
 {
     if (uri == "/" && m_default_path != "")
@@ -156,49 +160,4 @@ void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
 {
     fill_http_status_code(ss, code);
     ss << '\n';
-}
-
-bool ServerFileApplication::handle_parameter_set(std::stringstream& ss, const std::string_view& query)
-{
-    std::regex re( R"(^input([0-9]*)=([0-9\.]*)$)");
-    std::match_results<std::string_view::iterator> res {};
-    if ( std::regex_match(query.begin(), query.end(), res, re) )
-    {
-        if (res.size() == 3)
-        {
-            size_t idx = std::stoi( res[1].str() );
-            double value = std::stod( res[2].str() );
-
-            if (idx < m_params.m_buffer.size())
-            {
-                m_params.m_buffer[idx] = value;
-            }
-
-            send_error(ss, 200);
-        }
-        else
-        {
-            send_error(ss, 500);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-void ServerFileApplication::handle_parameters_get(std::stringstream& ss, const std::string_view& path)
-{
-    std::stringstream sst {};
-
-    auto it = m_params.m_buffer.begin();
-    sst << *it;
-    for (++it; it != m_params.m_buffer.end(); ++it)
-    {
-        sst << ";" << *it;
-    }
-
-    CustomResponse resp(200, "text/plain", sst.str());
-
-    fill_custom_response(ss, resp);
 }

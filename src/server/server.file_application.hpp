@@ -5,14 +5,11 @@
 #pragma once
 
 #include "server.hpp"
+#include "custom_response.hpp"
 
 #include <atomic>
 #include <filesystem>
-
-struct Params
-{
-    std::array<unsigned, 5> m_buffer {};
-};
+#include <functional>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //! @brief Application layer implementation
@@ -20,6 +17,8 @@ struct Params
 class ServerFileApplication
 {
 public:
+    using CustomCallback = std::function<CustomResponse(std::string_view)>;
+
     ServerFileApplication(const std::string_view& port, const std::filesystem::path& root);
 
     ServerFileApplication(const ServerFileApplication&) = delete;
@@ -33,6 +32,10 @@ public:
     void request_shutdown();
 
     void set_default_path(const std::string& default_path);
+
+    void reset_custom_handlers();
+    
+    void register_custom_handler(std::string path, CustomCallback callback);
 
 private:
     std::filesystem::path convert_uri_path_to_local_path(const std::string_view& uri) const;
@@ -51,5 +54,5 @@ private:
 
     std::string m_default_path;
 
-    Params m_params {};
+    std::unordered_map<std::string, CustomCallback> m_custom_callbacks {};
 };

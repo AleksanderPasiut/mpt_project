@@ -6,8 +6,11 @@
 
 #include "server/server.file_application.hpp"
 
+#include <qr_gen.hpp>
+
 #include <iostream>
 #include <string>
+#include <fstream>
 
 static std::string process_args(int argc, char* argv[])
 {
@@ -19,8 +22,25 @@ static std::string process_args(int argc, char* argv[])
     return std::string("3490");
 }
 
+static CustomResponse get_qr_code(const std::string_view& query)
+{
+    std::ifstream fs("qr_code.bmp", std::ifstream::binary);
+    if (fs)
+    {
+        std::string buffer {};
+        buffer.resize(65536);
+        size_t n = fs.readsome(&buffer[0], buffer.size());
+        buffer.resize(n);
+        return CustomResponse(200, "image/bmp", buffer);
+    }
+
+    return CustomResponse(404);
+}
+
 int main(int argc, char* argv[])
 {
+    run_qr_gen("Some QR message here", "qr_code.bmp");
+
     const std::string port = process_args(argc, argv);
 
     Params m_params {};
@@ -31,6 +51,7 @@ int main(int argc, char* argv[])
 
     fsapp.register_custom_handler("/values.txt", std::bind(&Params::handle_parameters_get, &m_params, std::placeholders::_1) );
     fsapp.register_custom_handler("/value", std::bind(&Params::handle_parameter_set, &m_params, std::placeholders::_1) );
+    fsapp.register_custom_handler("/qr_code.bmp", get_qr_code);
     fsapp.run();
 
     return 0;

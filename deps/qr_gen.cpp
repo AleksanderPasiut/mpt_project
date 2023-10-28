@@ -34,5 +34,5 @@ void run_qr_gen(const char* data, std::string filename)
         }
     }
 
-    image.write("output.bmp");
+    image.write(filename);
 }

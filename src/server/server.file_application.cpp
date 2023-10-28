@@ -47,7 +47,7 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
                 {
                     try
                     {
-                        const std::filesystem::path path = resource_to_path(resource);
+                        const std::filesystem::path path = convert_resource_to_path(resource);
 
                         std::ifstream fs(path);
 
@@ -98,7 +98,7 @@ void ServerFileApplication::set_default_path(const std::string& default_path)
     m_default_path = default_path;
 }
 
-std::filesystem::path ServerFileApplication::resource_to_path(const std::string_view& resource) const
+std::filesystem::path ServerFileApplication::convert_resource_to_path(const std::string_view& resource) const
 {
     if (resource == "/" && m_default_path != "")
     {

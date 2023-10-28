@@ -35,7 +35,7 @@ public:
     void set_default_path(const std::string& default_path);
 
 private:
-    std::filesystem::path resource_to_path(const std::string_view& resource) const;
+    std::filesystem::path convert_resource_to_path(const std::string_view& resource) const;
 
     void send_error(std::stringstream& ss, unsigned code);
 

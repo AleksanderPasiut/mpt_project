@@ -4,15 +4,12 @@
 
 #include "server.file_application.hpp"
 #include "mime_type_map.hpp"
+#include "string_view.tool.hpp"
+#include "uri.hpp"
 
 #include <fstream>
 #include <regex>
 #include <iostream>
-
-static const std::string_view get_string_view_from_string(const std::string& arg)
-{
-    return std::string_view( arg.data(), arg.size() );
-}
 
 static std::string_view get_extension(const std::string& arg)
 {
@@ -32,45 +29,6 @@ static std::string_view get_content_type(const std::string& arg)
     const std::string_view extension = get_extension(arg);
     return MimeTypeMap::get().get(extension);
 }
-
-class Uri
-{
-public:
-    Uri(const std::string_view& uri)
-    {
-        std::regex re { R"(^([^\?]*)(|\?([^\?]*))$)" };
-
-        std::match_results<std::string_view::iterator> res {};
-        if ( std::regex_match(uri.begin(), uri.end(), res, re) )
-        {
-            if (res.size() == 3) // query not present
-            {
-                m_path = res[1].str();
-                m_query = "";
-            }
-
-            if (res.size() == 4) // query present
-            {
-                m_path = res[1].str();
-                m_query = res[3].str();
-            }
-        }
-    };
-
-    std::string_view get_path() const
-    {
-        return get_string_view_from_string(m_path);
-    }
-
-    std::string_view get_query() const
-    {
-        return get_string_view_from_string(m_query);
-    }
-
-private:
-    std::string m_path;
-    std::string m_query;
-};
 
 ServerFileApplication::ServerFileApplication(const std::string_view& port, const std::filesystem::path& root)
     : m_server(port)

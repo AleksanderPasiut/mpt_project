@@ -1,0 +1,6 @@
+[submodule "src/deps/QR-Image-embedded"]
+	path = src/deps/QR-Image-embedded
+	url = https://github.com/swex/QR-Image-embedded
+[submodule "src/deps/libbmp"]
+	path = src/deps/libbmp
+	url = https://github.com/marc-q/libbmp

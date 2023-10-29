@@ -7,89 +7,21 @@
     <body onload="onload()" onunload="onunload()">
         <table style="width:100%; height:100%;">
             <tr>
-                <td rowspan="12" width="10%" style="vertical-align: top;">
-                    <img src="qr_code.bmp" width="70%">
-                </td>
-                <td class="range">
-                    <label for="input0">Zeroth input</label>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
                 <td>
-                    <input type="range" value="0" id="input0" min="0" max="100" step="1" class="slider" oninput="onsliding(0)" onchange="onslider(0)">
+                    <label for="inputs">Input text (without spaces)</label>
                 </td>
-                <td class="feedback_td">
-                    <input type="number" value="0" class="feedback" id="feedback0" readonly>
-                </td>
-            </tr>
-            <tr>
-                <td class="range">
-                    <label for="input1">First input</label>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="range" value="0" id="input1" min="0" max="100" step="1" class="slider" oninput="onsliding(1)" onchange="onslider(1)">
-                </td>
-                <td class="feedback_td">
-                    <input type="number" value="0" class="feedback" id="feedback1" readonly>
-                </td>
-            </tr>
-            <tr>
-                <td class="range">
-                    <label for="input2">Second input</label>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="range" value="0" id="input2" min="0" max="100" step="1" class="slider" oninput="onsliding(2)" onchange="onslider(2)">
-                </td>
-                <td class="feedback_td">
-                    <input type="number" value="0" class="feedback" id="feedback2" readonly>
-                </td>
-            </tr>
-            <tr>
-                <td class="range">
-                    <label for="input3">Third input</label>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="range" value="0" id="input3" min="0" max="100" step="1" class="slider" oninput="onsliding(3)" onchange="onslider(3)">
-                </td>
-                <td class="feedback_td">
-                    <input type="number" value="0" class="feedback" id="feedback3" readonly>
-                </td>
-            </tr>
-            <tr>
-                <td class="range">
-                    <label for="input4">Fourth input</label>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="range" value="0" id="input4" min="0" max="100" step="1" class="slider" oninput="onsliding(4)" onchange="onslider(4)">
-                </td>
-                <td class="feedback_td">
-                    <input type="number" value="0" class="feedback" id="feedback4" readonly>
-                </td>
-            </tr>
-            <tr>
-                <td class="range">
-                    <label for="inputs">String input</label>
-                </td>
-                <td></td>
             </tr>
             <tr>
                 <td>
                     <input type="text" value="" id="inputs" oninput="onstringchange()" style="width:100%">
                 </td>
             </tr>
+            <tr style="height:100%;">
+                <td colspan="2" style="vertical-align: middle;">
+                    <center>
+                        <img id="qr" src="qr_code.bmp" style="width: 50%;">
+                    </center>
+                </td>
+            </tr>
         </table>
-    </body>
-</html>
+    </body>`

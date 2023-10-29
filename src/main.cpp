@@ -6,7 +6,6 @@
 
 #include "server/server.file_application.hpp"
 
-#include <qr_gen.hpp>
 
 #include <iostream>
 #include <string>
@@ -39,8 +38,6 @@ static CustomResponse get_qr_code(const std::string_view& query)
 
 int main(int argc, char* argv[])
 {
-    run_qr_gen("Some QR message here", "qr_code.bmp");
-
     const std::string port = process_args(argc, argv);
 
     Params m_params {};

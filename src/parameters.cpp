@@ -7,6 +7,8 @@
 #include <regex>
 #include <sstream>
 
+#include <qr_gen.hpp>
+
 CustomResponse Params::handle_parameter_set(const std::string_view& query)
 {
     std::regex re( R"(^input([0-9]*)=([0-9\.]*)$)");
@@ -46,8 +48,16 @@ CustomResponse Params::handle_parameters_get(const std::string_view&)
 
 CustomResponse Params::set_string_parameter(const std::string_view& query)
 {
-    m_string_parameter = query;
-    return CustomResponse(200);
+    if (query.length() > 0)
+    {
+        m_string_parameter = query;
+
+        run_qr_gen(m_string_parameter.data(), "qr_code.bmp");
+
+        return CustomResponse(200);
+    }
+    
+    return CustomResponse(500);
 }
 
 CustomResponse Params::get_string_parameter(const std::string_view&)

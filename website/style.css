@@ -1,43 +1,7 @@
 body
 {
-    zoom: 2
-}
-
-.slider
-{
-    width: 100%;
-}
-
-#std_button
-{
-    width:100%;
-    height:100%;
-}
-
-#std_range
-{
-    width:100%;
-}
-
-#std_input
-{
-    width:100%;
-    height:100%;
-}
-
-.range
-{
-    width: 70%;
-}
-
-.feedback_td
-{
-    text-align: center;
-}
-
-.feedback
-{
-    width: 50%;
+    zoom: 2;
+    overflow: hidden;
 }
 
 img

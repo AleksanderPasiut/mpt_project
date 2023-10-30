@@ -108,9 +108,22 @@ private:
             }
         }
 
+        SocketWrapper(const SocketWrapper&) = delete;
+        SocketWrapper& operator= (const SocketWrapper&) = delete;
+
+        SocketWrapper(SocketWrapper&& arg)
+        {
+            this->m_fd = arg.m_fd;
+            arg.m_fd = -1;
+        }
+
         virtual ~SocketWrapper() noexcept
         {
-            close(m_fd);
+            if (m_fd != -1)
+            {
+                close(m_fd);
+                m_fd = -1;
+            }
         }
 
         void set_reuse_addr()
@@ -151,7 +164,7 @@ private:
         int m_fd;
     };
 
-    SocketWrapper get_listener_socket(const char *port)
+    static SocketWrapper get_listener_socket(const char* port)
     {
         ServAddrinfo servinfo(port);
 
@@ -161,7 +174,7 @@ private:
             {
                 if (addrinfo != nullptr)
                 {
-                    SocketWrapper socket_internal { addrinfo };
+                    SocketWrapper socket_internal( addrinfo );
 
                     socket_internal.set_reuse_addr();
                     socket_internal.bind();

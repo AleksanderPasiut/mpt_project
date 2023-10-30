@@ -8,7 +8,11 @@ file(GLOB_RECURSE SOURCES_LIST src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES_LIST})
 
+add_subdirectory(deps)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE -lpthread)
 target_link_libraries(${PROJECT_NAME} PRIVATE -lm)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src)
+
+

@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "parameters.hpp"
+#include "process.hpp"
 
 #include "server/server.file_application.hpp"
 
@@ -40,28 +41,19 @@ static CustomResponse get_qr_code(const std::string_view& query)
 
 static void generate_qr_code_bmp(const std::string& port)
 {
-    FILE* handle = popen("hostname -I", "r");
-    if (handle)
-    {
-        char buf[1024];
-        size_t readn = fread(buf, 1, sizeof(buf), handle);
-        if (readn > 0)
-        {
-            std::regex re { R"(([0-9\.]*))" };
-            std::cmatch res {};
-            if (std::regex_search(buf, res, re))
-            {
-                if (res.size() == 2)
-                {
-                    const std::string hostname = res[1];
-                    const std::string url = "http://" + hostname + ":" + port;
-                    run_qr_gen(url.c_str(), "qr_code.bmp");
-                }
-            }
-        }
+    Process hostname_cmd("hostname -I");
+    const std::string hostname_cmd_resp = hostname_cmd.readsome(1024);
 
-        pclose(handle);
-        handle = NULL;
+    std::regex re { R"(([0-9\.]*))" };
+    std::smatch res {};
+    if (std::regex_search(hostname_cmd_resp, res, re))
+    {
+        if (res.size() == 2)
+        {
+            const std::string hostname = res[1];
+            const std::string url = "http://" + hostname + ":" + port;
+            run_qr_gen(url.c_str(), "qr_code.bmp");
+        }
     }
 }
 

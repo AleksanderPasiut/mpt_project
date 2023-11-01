@@ -37,6 +37,10 @@ public:
     
     void register_custom_handler(std::string path, CustomCallback callback);
 
+    void reset_on_post_handlers();
+
+    void register_on_post_handler(std::string path, CustomCallback callback);
+
 private:
     std::filesystem::path convert_uri_path_to_local_path(const std::string_view& uri) const;
 
@@ -55,4 +59,6 @@ private:
     std::string m_default_path;
 
     std::unordered_map<std::string, CustomCallback> m_custom_callbacks {};
+
+    std::unordered_map<std::string, CustomCallback> m_on_post_callbacks {};
 };

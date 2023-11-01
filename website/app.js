@@ -49,5 +49,16 @@ async function onslider(idx)
 async function onstringchange()
 {
     var v = document.getElementById('inputs').value;
-    await fetch('/string?'+v, { method: "GET" })
+    await fetch('/string',
+    {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers:
+        {
+            "Content-Type": "text/plain",
+        },
+        redirect: "follow",
+        body: v
+    });
 }

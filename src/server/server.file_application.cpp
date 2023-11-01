@@ -71,12 +71,12 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
     m_shutdown_request.test_and_set();
 
     m_server.set_on_request_callback(
-        [this](std::stringstream& ss, const std::string_view& method, const std::string_view& uri) -> void
+        [this](std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents ) -> void
     {
+        const Uri get_uri(uri);
+
         if (method == "GET")
         {
-            const Uri get_uri(uri);
-
             auto it = m_custom_callbacks.find(std::string(get_uri.get_path()));
             if (it != m_custom_callbacks.end())
             {
@@ -108,6 +108,15 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
                 {
                     fill_http_status_code(ss, 500);
                 }
+            }
+        }
+
+        if (method == "POST")
+        {
+            auto it = m_on_post_callbacks.find(std::string(get_uri.get_path()));
+            if (it != m_on_post_callbacks.end())
+            {
+                fill_custom_response(ss, (it->second)(contents));
             }
         }
     });
@@ -144,6 +153,16 @@ void ServerFileApplication::reset_custom_handlers()
 void ServerFileApplication::register_custom_handler(std::string path, CustomCallback callback)
 {
     m_custom_callbacks[path] = callback;
+}
+
+void ServerFileApplication::reset_on_post_handlers()
+{
+    m_on_post_callbacks.clear();
+}
+
+void ServerFileApplication::register_on_post_handler(std::string path, CustomCallback callback)
+{
+    m_on_post_callbacks[path] = callback;
 }
 
 std::filesystem::path ServerFileApplication::convert_uri_path_to_local_path(const std::string_view& uri) const

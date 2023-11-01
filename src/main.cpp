@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "parameters.hpp"
+#include "process.hpp"
 
 #include "server/server.file_application.hpp"
 
@@ -11,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <regex>
 
 static std::string process_args(int argc, char* argv[])
 {
@@ -37,13 +39,31 @@ static CustomResponse get_qr_code(const std::string_view& query)
     return CustomResponse(404);
 }
 
+static void generate_qr_code_bmp(const std::string& port)
+{
+    Process hostname_cmd("hostname -I");
+    const std::string hostname_cmd_resp = hostname_cmd.readsome(1024);
+
+    std::regex re { R"(([0-9\.]*))" };
+    std::smatch res {};
+    if (std::regex_search(hostname_cmd_resp, res, re))
+    {
+        if (res.size() == 2)
+        {
+            const std::string hostname = res[1];
+            const std::string url = "http://" + hostname + ":" + port;
+            run_qr_gen(url.c_str(), "qr_code.bmp");
+        }
+    }
+}
+
 int main(int argc, char* argv[])
 {
-    run_qr_gen("Some QR message here", "qr_code.bmp");
-
     const std::string port = process_args(argc, argv);
 
     Params m_params {};
+
+    generate_qr_code_bmp(port);
 
     ServerFileApplication fsapp { port, "../website" };
 

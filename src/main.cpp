@@ -64,7 +64,7 @@ void execute_capd_process()
     {
         CapdProcess::Params
         {
-            .executable_path = "/repos/capd2_template/build/capd2_template",
+            .executable_path = "backend/capd_backend",
             .func_str = "var:x,y;fun:x+y,x-y;",
             .initial_condition_values_str = "1.0;2.0",
             .integration_time = 1.0,

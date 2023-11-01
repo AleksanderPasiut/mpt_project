@@ -17,6 +17,7 @@ public:
     using Callback = std::function<void(
         std::stringstream&,
         const std::string_view&,
+        const std::string_view&,
         const std::string_view&)>;
 
     OnRequestNotifier()

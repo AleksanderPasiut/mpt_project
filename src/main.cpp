@@ -93,6 +93,8 @@ int main(int argc, char* argv[])
     fsapp.register_custom_handler("/values.txt", std::bind(&Params::handle_parameters_get, &m_params, std::placeholders::_1) );
     fsapp.register_custom_handler("/value", std::bind(&Params::handle_parameter_set, &m_params, std::placeholders::_1) );
     fsapp.register_custom_handler("/qr_code.bmp", get_qr_code);
+    fsapp.register_on_post_handler("/string", std::bind(&Params::set_string_parameter, &m_params, std::placeholders::_1) );
+    fsapp.register_custom_handler("/string.txt", std::bind(&Params::get_string_parameter, &m_params, std::placeholders::_1) );
     fsapp.run();
 
     return 0;

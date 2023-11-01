@@ -2,7 +2,7 @@ slider_busy_idx = -1
 
 function onload()
 {
-    setInterval(heartbeat, 100)
+    setInterval(heartbeat, 200)
 }
 
 function onunload()
@@ -25,6 +25,10 @@ async function heartbeat()
             document.getElementById('feedback'+idx).value = v
         }
     }
+
+    response = await fetch('/string.txt', { method: "GET" })
+    str = await response.text()
+    document.getElementById('inputs').value = str
 }
 
 function onsliding(idx)
@@ -40,4 +44,21 @@ async function onslider(idx)
     var label = 'input'+idx
     var v = document.getElementById(label).value;
     await fetch('value?'+label+'='+v, { method: "GET" })
+}
+
+async function onstringchange()
+{
+    var v = document.getElementById('inputs').value;
+    await fetch('/string',
+    {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers:
+        {
+            "Content-Type": "text/plain",
+        },
+        redirect: "follow",
+        body: v
+    });
 }

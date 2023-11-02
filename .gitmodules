@@ -4,3 +4,6 @@
 [submodule "deps/libbmp"]
 	path = deps/libbmp
 	url = https://github.com/marc-q/libbmp
+[submodule "backend/CAPD"]
+	path = backend/CAPD
+	url = https://github.com/CAPDGroup/CAPD

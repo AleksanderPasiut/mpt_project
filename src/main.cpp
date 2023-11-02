@@ -3,6 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "parameters.hpp"
+#include "process.hpp"
+#include "capd_process.hpp"
 
 #include "server/server.file_application.hpp"
 
@@ -10,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <regex>
 
 static std::string process_args(int argc, char* argv[])
 {

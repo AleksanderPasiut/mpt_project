@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "parameters.hpp"
+#include "capd_process.hpp"
 
 #include <regex>
 #include <sstream>
@@ -51,7 +52,32 @@ CustomResponse Params::get_string_output(const std::string_view&)
 
 CustomResponse Params::compute(const std::string_view&)
 {
-    m_string_output = m_string_parameter[0] + m_string_parameter[1] + m_string_parameter[2];
+    try
+    {
+        CapdProcess capd_process
+        {
+            CapdProcess::Params
+            {
+                .executable_path = "backend/capd_backend",
+                .func_str = m_string_parameter[0], //"var:x,y;fun:x+y,x-y;",
+                .initial_condition_values_str = m_string_parameter[1], // "1.0;2.0;"
+                .integration_time = std::stod( m_string_parameter[2] ),
+                .order = m_buffer[0],
+                .decimal_places = m_buffer[1]
+            }
+        };
+
+        m_string_output = capd_process.get_resp();
+    }
+    catch (std::exception e)
+    {
+        m_string_output = std::string("Computation failed: ") + e.what();
+    }
+    catch (...)
+    {
+        m_string_output = std::string("Computation failed due to unknown exception");
+    }
+
     return CustomResponse(200);
 }
 

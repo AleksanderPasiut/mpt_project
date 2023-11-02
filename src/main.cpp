@@ -4,7 +4,6 @@
 
 #include "parameters.hpp"
 #include "process.hpp"
-#include "capd_process.hpp"
 
 #include "server/server.file_application.hpp"
 
@@ -58,28 +57,8 @@ static void generate_qr_code_bmp(const std::string& port)
     }
 }
 
-void execute_capd_process()
-{
-    CapdProcess capd_process
-    {
-        CapdProcess::Params
-        {
-            .executable_path = "backend/capd_backend",
-            .func_str = "var:x,y;fun:x+y,x-y;",
-            .initial_condition_values_str = "1.0;2.0",
-            .integration_time = 1.0,
-            .order = 20,
-            .decimal_places = 20
-        }
-    };
-
-    std::cout << capd_process.get_resp() << '\n';
-}
-
 int main(int argc, char* argv[])
 {
-    execute_capd_process();    
-
     const std::string port = process_args(argc, argv);
 
     Params m_params {};

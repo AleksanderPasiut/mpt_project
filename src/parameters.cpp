@@ -44,13 +44,14 @@ CustomResponse Params::handle_parameters_get(const std::string_view&)
     return CustomResponse(200, "text/plain", ss.str());
 }
 
-CustomResponse Params::set_string_parameter(const std::string_view& query)
+CustomResponse Params::get_string_output(const std::string_view&)
 {
-    m_string_parameter = query;
+    return CustomResponse(200, "text/plain", m_string_output);
+}
+
+CustomResponse Params::compute(const std::string_view&)
+{
+    m_string_output = m_string_parameter[0] + m_string_parameter[1] + m_string_parameter[2];
     return CustomResponse(200);
 }
 
-CustomResponse Params::get_string_parameter(const std::string_view&)
-{
-    return CustomResponse(200, "text/plain", m_string_parameter);
-}

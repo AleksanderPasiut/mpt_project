@@ -62,3 +62,11 @@ async function onstringchange(idx)
         body: v
     });
 }
+
+async function ontrigger()
+{
+    await fetch('/trigger',
+    {
+        method: "POST"
+    });
+}

@@ -93,8 +93,11 @@ int main(int argc, char* argv[])
     fsapp.register_custom_handler("/values.txt", std::bind(&Params::handle_parameters_get, &m_params, std::placeholders::_1) );
     fsapp.register_custom_handler("/value", std::bind(&Params::handle_parameter_set, &m_params, std::placeholders::_1) );
     fsapp.register_custom_handler("/qr_code.bmp", get_qr_code);
-    fsapp.register_on_post_handler("/string0", std::bind(&Params::set_string_parameter, &m_params, std::placeholders::_1) );
-    fsapp.register_custom_handler("/string.txt", std::bind(&Params::get_string_parameter, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/string0", std::bind(&Params::set_string<0>, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/string1", std::bind(&Params::set_string<1>, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/string2", std::bind(&Params::set_string<2>, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/trigger", std::bind(&Params::compute, &m_params, std::placeholders::_1) );
+    fsapp.register_custom_handler("/string.txt", std::bind(&Params::get_string_output, &m_params, std::placeholders::_1) );
     fsapp.run();
 
     return 0;

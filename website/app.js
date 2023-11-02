@@ -2,7 +2,7 @@ slider_busy_idx = -1
 
 function onload()
 {
-    setInterval(heartbeat, 200)
+    // setInterval(heartbeat, 200)
 }
 
 function onunload()
@@ -10,41 +10,11 @@ function onunload()
     fetch('/terminate', { method: "POST" })
 }
 
-async function heartbeat()
+function refreshCachedImage(img_id)
 {
-    response = await fetch('/values.txt', { method: "GET" })
-    values_str = await response.text()
-    values = values_str.split(';')
-
-    for (idx = 0; idx < values.length; ++idx)
-    {
-        if (idx != slider_busy_idx)
-        {
-            v = parseInt( values[idx] )
-            document.getElementById('input'+idx).value = v
-            document.getElementById('feedback'+idx).value = v
-        }
-    }
-
-    response = await fetch('/string.txt', { method: "GET" })
-    str = await response.text()
-    document.getElementById('inputs').value = str
-}
-
-function onsliding(idx)
-{
-    slider_busy_idx = idx
-    var v = document.getElementById('input'+idx).value;
-    document.getElementById('feedback'+idx).value = v;
-}
-
-async function onslider(idx)
-{
-    slider_busy_idx = -1
-    var label = 'input'+idx
-    var v = document.getElementById(label).value;
-    await fetch('value?'+label+'='+v, { method: "GET" })
-}
+    var img = document.getElementById(img_id);
+    img.src = img.src; // trick browser into reload
+};
 
 async function onstringchange()
 {
@@ -61,4 +31,7 @@ async function onstringchange()
         redirect: "follow",
         body: v
     });
+
+    await fetch('/qr_code.bmp', { cache: 'reload', mode: 'no-cors' })
+    refreshCachedImage('qr')
 }

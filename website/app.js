@@ -28,7 +28,7 @@ async function heartbeat()
 
     response = await fetch('/string.txt', { method: "GET" })
     str = await response.text()
-    document.getElementById('inputs').value = str
+    document.getElementById('output').value = str
 }
 
 function onsliding(idx)
@@ -46,10 +46,10 @@ async function onslider(idx)
     await fetch('value?'+label+'='+v, { method: "GET" })
 }
 
-async function onstringchange()
+async function onstringchange(idx)
 {
-    var v = document.getElementById('inputs').value;
-    await fetch('/string',
+    var v = document.getElementById('inputs'+idx).value;
+    await fetch('/string'+idx,
     {
         method: "POST",
         mode: "cors",

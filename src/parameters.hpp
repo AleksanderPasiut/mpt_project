@@ -18,7 +18,7 @@ public:
     CustomResponse get_string_parameter(const std::string_view&);
 
 private:
-    std::array<unsigned, 5> m_buffer {};
+    std::array<unsigned, 2> m_buffer {};
 
     std::string m_string_parameter {};
 };

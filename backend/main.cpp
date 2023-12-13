@@ -66,9 +66,65 @@ std::string compute_timemap(
     }
     else
     {
-        std::cout << func.dimension() << '\n';
-        std::cout << func.imageDimension() << '\n';
-        throw std::logic_error("Function dimension and image dimension mismatch!");
+        std::stringstream ss {};
+        ss << "Function dimension and image dimension mismatch: ";
+        ss << func.dimension() << ' ' << func.imageDimension() << '\n';
+        throw std::logic_error(ss.str());
+    }
+}
+
+const char * validate_not_empty(const char* ptr, const char* exception_msg)
+{
+    if (!ptr || !*ptr)
+    {
+        throw std::logic_error(exception_msg);
+    }
+    return ptr;
+}
+
+const char * validate_formula_string(const char * ptr)
+{
+    return validate_not_empty( ptr, "Empty formula string provided!" );
+}
+
+const char * validate_initial_conditions_string(const char * ptr)
+{
+    return validate_not_empty( ptr, "Empty initial condition values!" );
+}
+
+double parse_integration_time(const char * ptr)
+{
+    try
+    {
+        return std::stod(ptr);
+    }
+    catch (...)
+    {
+        throw std::logic_error("Failed to parse integration time value!");
+    }
+}
+
+unsigned parse_order(const char* ptr)
+{
+    try
+    {
+        return std::stoul(ptr);
+    }
+    catch (...)
+    {
+        throw std::logic_error("Failed to parse order value!");
+    }
+}
+
+size_t parse_decimal_places(const char* ptr)
+{
+    try
+    {
+        return std::stoul(ptr);
+    }
+    catch (...)
+    {
+        throw std::logic_error("Failed to parse decimal places value!");
     }
 }
 
@@ -77,21 +133,52 @@ int main(int argc, char* argv[])
     using namespace Carina;
 
     // example arguments:  "var:x,y;fun:x+y,x-y;" "1.0;2.0;" 1.0 20 20
-
-    if (argc == 6)
+    try
     {
-        const char* func_str = argv[1];
-        const char* initial_condition_values_str = argv[2];
-        const double integration_time = std::stod(argv[3]);
-        const unsigned order = std::stoul(argv[4]);
-        const size_t decimal_places = std::stoul(argv[5]);
+        if (argc == 6)
+        {
+            const char* func_str
+            {
+                validate_formula_string( argv[1] )
+            };
 
-        std::cout << compute_timemap(
-            func_str,
-            initial_condition_values_str,
-            integration_time,
-            order,
-            decimal_places) << '\n';
+            const char* initial_condition_values_str
+            {
+                validate_initial_conditions_string( argv[2] )
+            };
+
+            const double integration_time
+            {
+                parse_integration_time( argv[3] )
+            };
+
+            const unsigned order
+            {
+                parse_order( argv[4] )
+            };
+
+            const size_t decimal_places
+            {
+                parse_decimal_places( argv[5] )
+            };
+            
+            const std::string output = compute_timemap(
+                func_str,
+                initial_condition_values_str,
+                integration_time,
+                order,
+                decimal_places);
+
+            std::cout << output << '\n';
+        }
+        else
+        {
+            throw std::logic_error("Internal error");
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << e.what() << '\n';
     }
 
     return 0;

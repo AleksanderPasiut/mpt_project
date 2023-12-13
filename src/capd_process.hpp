@@ -8,20 +8,54 @@
 
 #include <sstream>
 
+class CapdProcessParams
+{
+public:
+    CapdProcessParams(
+        const std::string& func_str,
+        const std::string& initial_condition_values_str,
+        const std::string& integration_time_str,
+        unsigned order,
+        unsigned decimal_places)
+    {
+        std::stringstream ss {};
+        ss << "backend/capd_backend ";
+        ss << process_str_param(func_str, "formula string")  << ' ';
+        ss << process_str_param(initial_condition_values_str, "initial condition values string")  << ' ';
+        ss << process_str_param(integration_time_str, "integration time string")  << ' ';
+        ss << order << ' ';
+        ss << decimal_places;
+
+        m_cmd = ss.str();
+    }
+
+    const std::string& get_cmd() const noexcept
+    {
+        return m_cmd;
+    }
+
+private:
+    static std::string process_str_param(
+        const std::string& arg,
+        const std::string& param)
+    {
+        if( arg.find_first_of('\"') != std::string::npos)
+        {
+            std::stringstream ss {};
+            ss << "Invalid characters in " << param;
+            throw std::logic_error(ss.str());
+        }
+
+        return '\"' + arg + '\"';
+    }
+
+    std::string m_cmd;
+};
+
 class CapdProcess
 {
 public:
-    struct Params
-    {
-        const std::string executable_path;
-        const std::string func_str;
-        const std::string initial_condition_values_str;
-        double integration_time;
-        unsigned order;
-        size_t decimal_places;
-    };
-
-    CapdProcess(const Params& params) : m_process(gen_cmd(params))
+    CapdProcess(const CapdProcessParams& params) : m_process(params.get_cmd())
     {}
 
     CapdProcess(const CapdProcess&) = delete;
@@ -33,19 +67,5 @@ public:
     }
 
 private:
-    static std::string gen_cmd(const Params& params)
-    {
-        std::stringstream ss {};
-        ss << params.executable_path << " ";
-        ss << "\"" << params.func_str << "\" ";
-        ss << "\"" << params.initial_condition_values_str << "\" ";
-        ss << params.integration_time << ' ';
-        ss << params.order << ' ';
-        ss << params.decimal_places;
-
-        const std::string ret = ss.str();
-        return ret;
-    }
-
     Process m_process;
 };

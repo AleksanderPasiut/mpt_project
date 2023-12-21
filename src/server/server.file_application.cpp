@@ -12,6 +12,9 @@
 #include <regex>
 #include <iostream>
 
+
+
+
 static std::string_view get_extension(const std::string& arg)
 {
     const std::size_t dot_idx = arg.find_last_of('.');
@@ -62,110 +65,91 @@ static void fill_custom_response(std::stringstream& ss, const CustomResponse& re
     }
 }
 
-ServerFileApplication::ServerFileApplication(const std::string_view& port, const std::filesystem::path& root)
-    : m_server(port)
-    , m_shutdown_request()
-    , m_root(root)
-    , m_default_path()
+
+
+
+
+void Internal::handle_request(std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents )
 {
-    m_shutdown_request.test_and_set();
+    const Uri get_uri(uri);
 
-    m_server.set_on_request_callback(
-        [this](std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents ) -> void
+    if (method == "GET")
     {
-        const Uri get_uri(uri);
-
-        if (method == "GET")
+        auto it = m_custom_callbacks.find(std::string(get_uri.get_path()));
+        if (it != m_custom_callbacks.end())
         {
-            auto it = m_custom_callbacks.find(std::string(get_uri.get_path()));
-            if (it != m_custom_callbacks.end())
+            fill_custom_response(ss, (it->second)(get_uri.get_query()));
+        }
+        else
+        {
+            try
             {
-                fill_custom_response(ss, (it->second)(get_uri.get_query()));
-            }
-            else
-            {
-                try
+                const std::filesystem::path path = convert_uri_path_to_local_path(uri);
+
+                std::ifstream fs(path);
+
+                if (fs)
                 {
-                    const std::filesystem::path path = convert_uri_path_to_local_path(uri);
-
-                    std::ifstream fs(path);
-
-                    if (fs)
-                    {
-                        std::string_view content_type = get_content_type(path.string());
-                        fill_http_status_code(ss, 200);
-                        ss << "Content-Type: " << content_type;
-                        ss << "\n\n";
-                        ss << fs.rdbuf();
-                        fs.close();
-                    }
-                    else
-                    {
-                        fill_http_status_code(ss, 404);
-                    }
+                    std::string_view content_type = get_content_type(path.string());
+                    fill_http_status_code(ss, 200);
+                    ss << "Content-Type: " << content_type;
+                    ss << "\n\n";
+                    ss << fs.rdbuf();
+                    fs.close();
                 }
-                catch (std::exception& e)
+                else
                 {
-                    fill_http_status_code(ss, 500);
+                    fill_http_status_code(ss, 404);
                 }
             }
-        }
-
-        if (method == "POST")
-        {
-            auto it = m_on_post_callbacks.find(std::string(get_uri.get_path()));
-            if (it != m_on_post_callbacks.end())
+            catch (std::exception& e)
             {
-                fill_custom_response(ss, (it->second)(contents));
+                fill_http_status_code(ss, 500);
             }
-        }
-    });
-}
-
-int ServerFileApplication::run()
-{
-    while (m_server.update())
-    {
-        if (m_shutdown_request.test_and_set() == false)
-        {
-            return 1;
         }
     }
-    
-    return 0;
+
+    if (method == "POST")
+    {
+        auto it = m_on_post_callbacks.find(std::string(get_uri.get_path()));
+        if (it != m_on_post_callbacks.end())
+        {
+            fill_custom_response(ss, (it->second)(contents));
+        }
+    }
 }
 
-void ServerFileApplication::request_shutdown()
+void Internal::request_shutdown()
 {
     m_shutdown_request.clear();
 }
 
-void ServerFileApplication::set_default_path(const std::string& default_path)
+void Internal::set_default_path(const std::string& default_path)
 {
     m_default_path = default_path;
 }
 
-void ServerFileApplication::reset_custom_handlers()
+void Internal::reset_custom_handlers()
 {
     m_custom_callbacks.clear();
 }
     
-void ServerFileApplication::register_custom_handler(std::string path, CustomCallback callback)
+void Internal::register_custom_handler(std::string path, CustomCallback callback)
 {
     m_custom_callbacks[path] = callback;
 }
 
-void ServerFileApplication::reset_on_post_handlers()
+void Internal::reset_on_post_handlers()
 {
     m_on_post_callbacks.clear();
 }
 
-void ServerFileApplication::register_on_post_handler(std::string path, CustomCallback callback)
+void Internal::register_on_post_handler(std::string path, CustomCallback callback)
 {
     m_on_post_callbacks[path] = callback;
 }
 
-std::filesystem::path ServerFileApplication::convert_uri_path_to_local_path(const std::string_view& uri) const
+std::filesystem::path Internal::convert_uri_path_to_local_path(const std::string_view& uri) const
 {
     if (uri == "/" && m_default_path != "")
     {
@@ -175,8 +159,39 @@ std::filesystem::path ServerFileApplication::convert_uri_path_to_local_path(cons
     return m_root / std::filesystem::path(uri.substr(1, uri.size() - 1));
 }
 
-void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
+
+
+
+ServerFileApplication::ServerFileApplication(const std::string_view& port, const std::filesystem::path& root)
+    : m_server(port)
+    , m_internal(root)
 {
-    fill_http_status_code(ss, code);
-    ss << '\n';
+    m_server.set_on_request_callback(
+        [this](std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents ) -> void
+    {
+        m_internal.handle_request(ss, method, uri, contents);
+    });
 }
+
+int ServerFileApplication::run()
+{
+    while (m_server.update())
+    {
+        if (m_internal.update() == false)
+        {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+
+
+
+
+// void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
+// {
+//     fill_http_status_code(ss, code);
+//     ss << '\n';
+// }

@@ -11,23 +11,28 @@
 #include <filesystem>
 #include <functional>
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//! @brief Application layer implementation
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class ServerFileApplication
+class Internal
 {
 public:
     using CustomCallback = std::function<CustomResponse(std::string_view)>;
 
-    ServerFileApplication(const std::string_view& port, const std::filesystem::path& root);
+    Internal(const std::filesystem::path& root) : m_root(root)
+    {
+        m_shutdown_request.test_and_set();
+    }
 
-    ServerFileApplication(const ServerFileApplication&) = delete;
-    ServerFileApplication& operator= (const ServerFileApplication&) = delete;
+    Internal(const Internal&) = delete;
+    Internal& operator= (const Internal&) = delete;
 
-    virtual ~ServerFileApplication() noexcept
+    virtual ~Internal() noexcept
     {}
 
-    int run();
+    bool update()
+    {
+        return m_shutdown_request.test_and_set();
+    }
+
+    void handle_request(std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents );
 
     void request_shutdown();
 
@@ -44,7 +49,43 @@ public:
 private:
     std::filesystem::path convert_uri_path_to_local_path(const std::string_view& uri) const;
 
-    void send_error(std::stringstream& ss, unsigned code);
+
+    std::atomic_flag m_shutdown_request {};
+
+    std::filesystem::path m_root;
+
+    std::string m_default_path {};
+
+    std::unordered_map<std::string, CustomCallback> m_custom_callbacks {};
+
+    std::unordered_map<std::string, CustomCallback> m_on_post_callbacks {};
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//! @brief Application layer implementation
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class ServerFileApplication
+{
+public:
+
+    ServerFileApplication(const std::string_view& port, const std::filesystem::path& root);
+
+    ServerFileApplication(const ServerFileApplication&) = delete;
+    ServerFileApplication& operator= (const ServerFileApplication&) = delete;
+
+    virtual ~ServerFileApplication() noexcept
+    {}
+
+    int run();
+
+    Internal& get_internal() noexcept
+    {
+        return m_internal;
+    }
+
+private:
+
+    // void send_error(std::stringstream& ss, unsigned code);
 
     bool handle_parameter_set(std::stringstream& ss, const std::string_view& query);
 
@@ -52,13 +93,5 @@ private:
 
     Server m_server;
 
-    std::atomic_flag m_shutdown_request;
-
-    std::filesystem::path m_root;
-
-    std::string m_default_path;
-
-    std::unordered_map<std::string, CustomCallback> m_custom_callbacks {};
-
-    std::unordered_map<std::string, CustomCallback> m_on_post_callbacks {};
+    Internal m_internal;
 };

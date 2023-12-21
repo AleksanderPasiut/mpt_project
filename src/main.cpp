@@ -67,16 +67,16 @@ int main(int argc, char* argv[])
 
     ServerFileApplication fsapp { port, "../website" };
 
-    fsapp.set_default_path("index.html");
+    fsapp.get_internal().set_default_path("index.html");
 
-    fsapp.register_custom_handler("/values.txt", std::bind(&ParametersBuffer::handle_parameters_get, &m_params, std::placeholders::_1) );
-    fsapp.register_custom_handler("/value", std::bind(&ParametersBuffer::handle_parameter_set, &m_params, std::placeholders::_1) );
-    fsapp.register_custom_handler("/qr_code.bmp", get_qr_code);
-    fsapp.register_on_post_handler("/string0", std::bind(&ParametersBuffer::set_string<0>, &m_params, std::placeholders::_1) );
-    fsapp.register_on_post_handler("/string1", std::bind(&ParametersBuffer::set_string<1>, &m_params, std::placeholders::_1) );
-    fsapp.register_on_post_handler("/string2", std::bind(&ParametersBuffer::set_string<2>, &m_params, std::placeholders::_1) );
-    fsapp.register_on_post_handler("/trigger", std::bind(&ParametersBuffer::compute, &m_params, std::placeholders::_1) );
-    fsapp.register_custom_handler("/string.txt", std::bind(&ParametersBuffer::get_string_output, &m_params, std::placeholders::_1) );
+    fsapp.get_internal().register_custom_handler("/values.txt", std::bind(&ParametersBuffer::handle_parameters_get, &m_params, std::placeholders::_1) );
+    fsapp.get_internal().register_custom_handler("/value", std::bind(&ParametersBuffer::handle_parameter_set, &m_params, std::placeholders::_1) );
+    fsapp.get_internal().register_custom_handler("/qr_code.bmp", get_qr_code);
+    fsapp.get_internal().register_on_post_handler("/string0", std::bind(&ParametersBuffer::set_string<0>, &m_params, std::placeholders::_1) );
+    fsapp.get_internal().register_on_post_handler("/string1", std::bind(&ParametersBuffer::set_string<1>, &m_params, std::placeholders::_1) );
+    fsapp.get_internal().register_on_post_handler("/string2", std::bind(&ParametersBuffer::set_string<2>, &m_params, std::placeholders::_1) );
+    fsapp.get_internal().register_on_post_handler("/trigger", std::bind(&ParametersBuffer::compute, &m_params, std::placeholders::_1) );
+    fsapp.get_internal().register_custom_handler("/string.txt", std::bind(&ParametersBuffer::get_string_output, &m_params, std::placeholders::_1) );
     fsapp.run();
 
     return 0;

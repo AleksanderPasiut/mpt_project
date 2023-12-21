@@ -66,7 +66,33 @@ static void fill_custom_response(std::stringstream& ss, const CustomResponse& re
 }
 
 
+void Internal::fill_file_response(std::stringstream& ss, const std::string_view& uri)
+{
+    try
+    {
+        const std::filesystem::path path = convert_uri_path_to_local_path(uri);
 
+        std::ifstream fs(path);
+
+        if (fs)
+        {
+            std::string_view content_type = get_content_type(path.string());
+            fill_http_status_code(ss, 200);
+            ss << "Content-Type: " << content_type;
+            ss << "\n\n";
+            ss << fs.rdbuf();
+            fs.close();
+        }
+        else
+        {
+            fill_http_status_code(ss, 404);
+        }
+    }
+    catch (std::exception& e)
+    {
+        fill_http_status_code(ss, 500);
+    }
+}
 
 
 void Internal::handle_request(std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents )
@@ -82,30 +108,7 @@ void Internal::handle_request(std::stringstream& ss, const std::string_view& met
         }
         else
         {
-            try
-            {
-                const std::filesystem::path path = convert_uri_path_to_local_path(uri);
-
-                std::ifstream fs(path);
-
-                if (fs)
-                {
-                    std::string_view content_type = get_content_type(path.string());
-                    fill_http_status_code(ss, 200);
-                    ss << "Content-Type: " << content_type;
-                    ss << "\n\n";
-                    ss << fs.rdbuf();
-                    fs.close();
-                }
-                else
-                {
-                    fill_http_status_code(ss, 404);
-                }
-            }
-            catch (std::exception& e)
-            {
-                fill_http_status_code(ss, 500);
-            }
+            fill_file_response(ss, uri);
         }
     }
 

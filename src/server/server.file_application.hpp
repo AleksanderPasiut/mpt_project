@@ -49,6 +49,7 @@ public:
 private:
     std::filesystem::path convert_uri_path_to_local_path(const std::string_view& uri) const;
 
+    void fill_file_response(std::stringstream& ss, const std::string_view& uri);
 
     std::atomic_flag m_shutdown_request {};
 
@@ -67,7 +68,6 @@ private:
 class ServerFileApplication
 {
 public:
-
     ServerFileApplication(const std::string_view& port, const std::filesystem::path& root);
 
     ServerFileApplication(const ServerFileApplication&) = delete;
@@ -84,10 +84,6 @@ public:
     }
 
 private:
-    bool handle_parameter_set(std::stringstream& ss, const std::string_view& query);
-
-    void handle_parameters_get(std::stringstream& ss, const std::string_view& path);
-
     Server m_server;
 
     Internal m_internal;

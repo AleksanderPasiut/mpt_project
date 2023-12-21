@@ -1,0 +1,35 @@
+\mode<presentation>
+
+% Frame title
+\defbeamertemplate*{frametitle}{texsx}[1][]
+{
+    \vskip0.5cm
+    \setbeamerfont{frametitle}{series=\sffamily,size={\fontsize{15}{15}}}
+    \begin{beamercolorbox}[wd=\paperwidth,ht=0.2cm,left,leftskip=0.7cm]{frametitle}
+        \usebeamerfont{frametitle}
+        \insertframetitle
+    \end{beamercolorbox}
+}
+
+% Frame footer
+\defbeamertemplate*{footline}{texsx}
+{
+    \setbeamerfont{footline}{series=\sffamily,size={\fontsize{7}{7}}}
+    \begin{beamercolorbox}[wd=\paperwidth, dp=1mm, ht=3.5mm, leftskip=1mm, rightskip=1mm]{footline}
+        \ifnum\thepage>1\relax%
+            \usebeamerfont{footline}
+            \makebox[240pt][l]
+            {
+                \insertshorttitle\ - \insertauthor
+            }
+            \hfill
+            \makebox[20pt][r]
+            {
+                \insertframenumber/\inserttotalframenumber
+            }
+        \fi
+    \end{beamercolorbox}
+    \vskip0.1cm
+}
+
+\mode<all>

@@ -1,0 +1,26 @@
+\mode<presentation>
+
+\setbeamertemplate{background}
+{
+    \includegraphics[width=\paperwidth,height=\paperheight]{background.png}
+}
+
+\defbeamertemplate*{title page}{texsx}[1][]
+{
+    \setbeamerfont{title}{series=\sffamily,size={\fontsize{22}{22}}}
+    \setbeamerfont{author}{series=\sffamily,size={\fontsize{14}{14}}}
+    \vskip1cm
+    \begin{beamercolorbox}[wd=\paperwidth]{title}
+        \centering
+        \usebeamerfont{title}
+        \inserttitle
+    \end{beamercolorbox}
+    \vskip2cm
+    \begin{beamercolorbox}[wd=\paperwidth]{author}
+        \centering
+        \usebeamerfont{author}
+        \insertauthor
+    \end{beamercolorbox}
+}
+
+\mode<all>

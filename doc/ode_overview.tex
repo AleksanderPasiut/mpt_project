@@ -1,0 +1,116 @@
+\documentclass[aspectratio=169]{beamer}
+
+\renewcommand\familydefault{\rmdefault}
+\renewcommand\mathfamilydefault{\rmdefault}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[normalem]{ulem}
+
+\title{ODE in a nutshell}
+\author[APasiut]{Aleksander Pasiut}
+
+\usetheme{texsx}
+
+\newcommand{\ee}[1]{	% equation short-command
+\begin{equation}
+#1
+\end{equation}
+}
+
+\newcommand{\mat}[1]{	% matrix / vector short-command
+\begin{bmatrix}
+#1
+\end{bmatrix}
+}
+
+\newcommand{\der}[0] { \partial } % derivatives
+\newcommand{\dd}[2] { \frac{\partial #1}{\partial #2} }
+\newcommand{\ddd}[2] { \frac{\partial^2 #1}{\partial #2^2} }
+\newcommand{\ddx}[3] { \frac{\partial^2 #1}{\partial #2 \partial #3} }
+\newcommand{\ddat}[3] { \frac{\partial #1}{\partial #2} \bigg\rvert_#3 }
+
+\setbeamerfont{normal}{series=\sffamily,size={\fontsize{10}{10}}}
+
+\setbeamercolor{itemize item}{fg=black}
+\setbeamertemplate{itemize item}[square]
+
+\setbeamercolor{itemize subitem}{fg=black}
+\setbeamertemplate{itemize subitem}[triangle]
+
+\let\tempone\itemize
+\let\temptwo\enditemize
+\renewenvironment{itemize}{\tempone\addtolength{\itemsep}{0.5\baselineskip}}{\temptwo}
+
+\begin{document}
+\usebeamerfont{normal}
+
+\begin{frame}
+
+    \setbeamerfont{title}{series=\bfseries,size={\fontsize{22}{22}}}
+    \setbeamerfont{author}{series=\bfseries,size={\fontsize{14}{14}}}
+    \vskip1cm
+    \begin{beamercolorbox}[wd=\paperwidth]{title}
+        \centering
+        \usebeamerfont{title}
+        ODE in a nutshell
+    \end{beamercolorbox}
+    \vskip2cm
+    \begin{beamercolorbox}[wd=\paperwidth]{author}
+        \centering
+        \usebeamerfont{author}
+        \insertauthor
+    \end{beamercolorbox}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Formal description}
+
+    We consider ordinary differential equation of the form:
+    \begin{equation}
+        \frac{dx}{dt} (t) = F \big( x(t) \big)
+    \end{equation}
+    where $f : \mathbb{R}^n \to \mathbb{R}^n$ is an analytic function and we assume boundary condition:
+    \begin{equation}
+        x(0) = x_0.
+    \end{equation}
+    Solution to this equation is a function $x : \mathbb{R} \supset U \to \mathbb{R}^n$ where $U$ is some neighborhood of $0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Simple case}
+
+    Some differential equations can be solved with pen and paper. For example the equation:
+    \begin{equation}
+        \frac{dx}{dt} (t) = a x(t),
+    \end{equation}
+    for some real number $a$, with the boundary condition
+    \begin{equation}
+        x(0) = b
+    \end{equation}
+    where $b$ is some real number has the solution:
+    \begin{equation}
+        x(t) = b \exp( at ).
+    \end{equation}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Realistic case}
+
+    \begin{itemize}
+        \item<1-> In the real case we have to deal with ODEs where function $f$ is some nonlinear function and cannot be exactly solved.
+        \item<2-> In such case numerical methods have to be used.
+        \item<3-> One such method is Euler method - used mostly for teaching purposes.
+        \item<4-> Another one is Runge-Kutta of order 4 - used very frequently in real use cases.
+        \item<5-> CAPD implements Taylor-expansion based solver with interval arithmetics, that provides an exact bounds of the solution.
+    \end{itemize}
+
+\end{frame}
+
+\end{document}

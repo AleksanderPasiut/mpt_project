@@ -1,2 +1,10 @@
 build
 .cache
+
+# beamer-related types
+*.aux
+*.out
+*.pdf
+*.log
+*.nav
+*.snm

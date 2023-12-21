@@ -57,8 +57,8 @@ CustomResponse Params::compute(const std::string_view&)
         CapdProcess capd_process
         {
             CapdProcessParams(
-                m_string_parameter[0], //"var:x,y;fun:x+y,x-y;",
-                m_string_parameter[1], // "1.0;2.0;"
+                m_string_parameter[0],
+                m_string_parameter[1],
                 m_string_parameter[2],
                 m_buffer[0],
                 m_buffer[1]

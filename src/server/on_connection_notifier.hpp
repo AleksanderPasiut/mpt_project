@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "socket.hpp"
+#include "socket/types.hpp"
 
 #include <functional>
 #include <string>

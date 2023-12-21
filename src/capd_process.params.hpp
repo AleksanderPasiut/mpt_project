@@ -35,12 +35,12 @@ public:
 private:
     static std::string process_str_param(
         const std::string& arg,
-        const std::string& param)
+        const std::string& param_name)
     {
         if( arg.find_first_of('\"') != std::string::npos)
         {
             std::stringstream ss {};
-            ss << "Invalid characters in " << param;
+            ss << "Invalid characters in " << param_name;
             throw std::logic_error(ss.str());
         }
 

@@ -185,13 +185,3 @@ int ServerFileApplication::run()
     
     return 0;
 }
-
-
-
-
-
-// void ServerFileApplication::send_error(std::stringstream& ss, unsigned code)
-// {
-//     fill_http_status_code(ss, code);
-//     ss << '\n';
-// }

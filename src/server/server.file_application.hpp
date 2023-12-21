@@ -84,9 +84,6 @@ public:
     }
 
 private:
-
-    // void send_error(std::stringstream& ss, unsigned code);
-
     bool handle_parameter_set(std::stringstream& ss, const std::string_view& query);
 
     void handle_parameters_get(std::stringstream& ss, const std::string_view& path);

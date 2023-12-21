@@ -2,7 +2,7 @@
 // Author: Aleksander M. Pasiut
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "parameters.hpp"
+#include "parameters_buffer.hpp"
 #include "process.hpp"
 
 #include "server/server.file_application.hpp"
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 {
     const std::string port = process_args(argc, argv);
 
-    Params m_params {};
+    ParametersBuffer m_params {};
 
     generate_qr_code_bmp(port);
 
@@ -69,14 +69,14 @@ int main(int argc, char* argv[])
 
     fsapp.set_default_path("index.html");
 
-    fsapp.register_custom_handler("/values.txt", std::bind(&Params::handle_parameters_get, &m_params, std::placeholders::_1) );
-    fsapp.register_custom_handler("/value", std::bind(&Params::handle_parameter_set, &m_params, std::placeholders::_1) );
+    fsapp.register_custom_handler("/values.txt", std::bind(&ParametersBuffer::handle_parameters_get, &m_params, std::placeholders::_1) );
+    fsapp.register_custom_handler("/value", std::bind(&ParametersBuffer::handle_parameter_set, &m_params, std::placeholders::_1) );
     fsapp.register_custom_handler("/qr_code.bmp", get_qr_code);
-    fsapp.register_on_post_handler("/string0", std::bind(&Params::set_string<0>, &m_params, std::placeholders::_1) );
-    fsapp.register_on_post_handler("/string1", std::bind(&Params::set_string<1>, &m_params, std::placeholders::_1) );
-    fsapp.register_on_post_handler("/string2", std::bind(&Params::set_string<2>, &m_params, std::placeholders::_1) );
-    fsapp.register_on_post_handler("/trigger", std::bind(&Params::compute, &m_params, std::placeholders::_1) );
-    fsapp.register_custom_handler("/string.txt", std::bind(&Params::get_string_output, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/string0", std::bind(&ParametersBuffer::set_string<0>, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/string1", std::bind(&ParametersBuffer::set_string<1>, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/string2", std::bind(&ParametersBuffer::set_string<2>, &m_params, std::placeholders::_1) );
+    fsapp.register_on_post_handler("/trigger", std::bind(&ParametersBuffer::compute, &m_params, std::placeholders::_1) );
+    fsapp.register_custom_handler("/string.txt", std::bind(&ParametersBuffer::get_string_output, &m_params, std::placeholders::_1) );
     fsapp.run();
 
     return 0;

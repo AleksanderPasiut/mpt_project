@@ -9,11 +9,11 @@
 #include <string_view>
 #include <array>
 
-class Params
+class ParametersBuffer
 {
 public:
     CustomResponse handle_parameter_set(const std::string_view& query);
-    CustomResponse handle_parameters_get(const std::string_view&);
+    CustomResponse handle_parameters_get(const std::string_view& query);
 
     template<unsigned idx>
     CustomResponse set_string(const std::string_view& payload)

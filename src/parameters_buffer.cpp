@@ -2,13 +2,13 @@
 // Author: Aleksander M. Pasiut
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "parameters.hpp"
+#include "parameters_buffer.hpp"
 #include "capd_process.hpp"
 
 #include <regex>
 #include <sstream>
 
-CustomResponse Params::handle_parameter_set(const std::string_view& query)
+CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& query)
 {
     std::regex re( R"(^input([0-9]*)=([0-9\.]*)$)");
     std::match_results<std::string_view::iterator> res {};
@@ -31,7 +31,7 @@ CustomResponse Params::handle_parameter_set(const std::string_view& query)
     return CustomResponse(500);
 }
 
-CustomResponse Params::handle_parameters_get(const std::string_view&)
+CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&)
 {
     std::stringstream ss {};
 
@@ -45,12 +45,12 @@ CustomResponse Params::handle_parameters_get(const std::string_view&)
     return CustomResponse(200, "text/plain", ss.str());
 }
 
-CustomResponse Params::get_string_output(const std::string_view&)
+CustomResponse ParametersBuffer::get_string_output(const std::string_view&)
 {
     return CustomResponse(200, "text/plain", m_string_output);
 }
 
-CustomResponse Params::compute(const std::string_view&)
+CustomResponse ParametersBuffer::compute(const std::string_view&)
 {
     try
     {

@@ -29,7 +29,7 @@ public:
 
     void request_shutdown();
 
-    ServerFileApplicationImpl& get_internal() noexcept
+    ServerFileApplicationImpl& get_impl() noexcept
     {
         return m_impl;
     }

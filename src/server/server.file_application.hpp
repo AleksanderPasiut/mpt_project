@@ -17,9 +17,7 @@ public:
     using CustomCallback = std::function<CustomResponse(std::string_view)>;
 
     Internal(const std::filesystem::path& root) : m_root(root)
-    {
-        m_shutdown_request.test_and_set();
-    }
+    {}
 
     Internal(const Internal&) = delete;
     Internal& operator= (const Internal&) = delete;
@@ -27,14 +25,7 @@ public:
     virtual ~Internal() noexcept
     {}
 
-    bool update()
-    {
-        return m_shutdown_request.test_and_set();
-    }
-
     void handle_request(std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents );
-
-    void request_shutdown();
 
     void set_default_path(const std::string& default_path);
 
@@ -50,8 +41,6 @@ private:
     std::filesystem::path convert_uri_path_to_local_path(const std::string_view& uri) const;
 
     void fill_file_response(std::stringstream& ss, const std::string_view& uri);
-
-    std::atomic_flag m_shutdown_request {};
 
     std::filesystem::path m_root;
 
@@ -78,6 +67,8 @@ public:
 
     int run();
 
+    void request_shutdown();
+
     Internal& get_internal() noexcept
     {
         return m_internal;
@@ -87,4 +78,6 @@ private:
     Server m_server;
 
     Internal m_internal;
+
+    std::atomic_flag m_shutdown_request {};
 };

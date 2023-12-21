@@ -122,10 +122,7 @@ void Internal::handle_request(std::stringstream& ss, const std::string_view& met
     }
 }
 
-void Internal::request_shutdown()
-{
-    m_shutdown_request.clear();
-}
+
 
 void Internal::set_default_path(const std::string& default_path)
 {
@@ -169,6 +166,8 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
     : m_server(port)
     , m_internal(root)
 {
+    m_shutdown_request.test_and_set();
+
     m_server.set_on_request_callback(
         [this](std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents ) -> void
     {
@@ -180,11 +179,16 @@ int ServerFileApplication::run()
 {
     while (m_server.update())
     {
-        if (m_internal.update() == false)
+        if (m_shutdown_request.test_and_set() == false)
         {
             return 1;
         }
     }
     
     return 0;
+}
+
+void ServerFileApplication::request_shutdown()
+{
+    m_shutdown_request.clear();
 }

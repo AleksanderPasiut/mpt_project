@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "socket.hpp"
+#include "socket/socket.hpp"
+
 #include "on_connection_notifier.hpp"
 #include "on_request_notifier.hpp"
 #include "request_buffer.hpp"

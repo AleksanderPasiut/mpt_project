@@ -60,7 +60,7 @@ public:
         if (it != m_buffer.end())
         {
             std::cout << __func__ << " " << session_id << '\n';
-            
+
             ParametersBuffer& parameters_buffer = it->second;
             return std::invoke(func, &parameters_buffer, query, cookie);
         }
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
     register_on_post_handler_helper("/string2",
         &ParametersBuffer::set_string<2>);
     
-    register_on_post_handler_helper("/triggers",
+    register_on_post_handler_helper("/trigger",
         &ParametersBuffer::compute);
 
 

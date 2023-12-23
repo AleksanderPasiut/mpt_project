@@ -10,6 +10,7 @@ class CapdProcessParams
 {
 public:
     CapdProcessParams(
+        const std::string& session_id,
         const std::string& func_str,
         const std::string& initial_condition_values_str,
         const std::string& integration_time_str,
@@ -18,6 +19,7 @@ public:
     {
         std::stringstream ss {};
         ss << "backend/capd_backend ";
+        ss << session_id << ' ';
         ss << process_str_param(func_str, "formula string")  << ' ';
         ss << process_str_param(initial_condition_values_str, "initial condition values string")  << ' ';
         ss << process_str_param(integration_time_str, "integration time string")  << ' ';

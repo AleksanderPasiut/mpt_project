@@ -135,31 +135,31 @@ int main(int argc, char* argv[])
     // example arguments:  "var:x,y;fun:x+y,x-y;" "1.0;2.0;" 1.0 20 20
     try
     {
-        if (argc == 6)
+        if (argc == 7)
         {
             const char* func_str
             {
-                validate_formula_string( argv[1] )
+                validate_formula_string( argv[2] )
             };
 
             const char* initial_condition_values_str
             {
-                validate_initial_conditions_string( argv[2] )
+                validate_initial_conditions_string( argv[3] )
             };
 
             const double integration_time
             {
-                parse_integration_time( argv[3] )
+                parse_integration_time( argv[4] )
             };
 
             const unsigned order
             {
-                parse_order( argv[4] )
+                parse_order( argv[5] )
             };
 
             const size_t decimal_places
             {
-                parse_decimal_places( argv[5] )
+                parse_decimal_places( argv[6] )
             };
             
             const std::string output = compute_timemap(

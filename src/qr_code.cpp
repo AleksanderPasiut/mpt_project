@@ -34,9 +34,7 @@ void generate_qr_code_bmp(const std::string& port)
     StreamWrapper hostname_cmd("hostname -I");
 
     std::string hostname_cmd_resp {};
-    hostname_cmd_resp.reserve(1024);
-    size_t ret = hostname_cmd.read(&hostname_cmd_resp[0], hostname_cmd_resp.capacity());
-    hostname_cmd_resp.resize(ret);
+    hostname_cmd.read(hostname_cmd_resp, 1024);
 
     std::regex re { R"(([0-9\.]*))" };
     std::smatch res {};

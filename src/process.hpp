@@ -51,9 +51,11 @@ public:
         return fileno(m_stream);
     }
 
-    size_t read(void* ptr, size_t max_size)
+    void read(std::string& output, size_t max_size)
     {
-        return fread(ptr, 1, max_size, m_stream);
+        output.resize(max_size);
+        const size_t write_size = fread(&output[0], 1, max_size, m_stream);
+        output.resize(write_size);
     }
 
 private:
@@ -66,9 +68,8 @@ public:
     Process(const std::string& command, size_t max_output_size)
         : m_stream_wrapper( command.c_str() )
         , m_monitor_thread( &Process::output_monitor, this )
-    {
-        m_output.reserve(max_output_size);
-    }
+        , m_max_output_size( max_output_size )
+    {}
 
     Process(const Process&) = delete;
     Process& operator= (const Process&) = delete;
@@ -115,9 +116,7 @@ private:
         {
             {
                 std::lock_guard lock(m_output_mu);
-                m_output.resize(1024);
-                const size_t wn = m_stream_wrapper.read( &m_output[0], m_output.capacity() );
-                m_output.resize(wn);
+                m_stream_wrapper.read( m_output, m_max_output_size );
             }
 
             m_state.store( State::Ready );
@@ -132,4 +131,5 @@ private:
 
     std::mutex m_output_mu {};
     std::string m_output {};
+    size_t m_max_output_size {};
 };

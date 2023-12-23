@@ -9,11 +9,14 @@
 
 #include <string>
 #include <unordered_map>
+#include <chrono>
 
 class SessionManager
 {
 public:
     using Func = CustomResponse(Session::*)(const std::string_view& query);
+    using TimePoint = std::chrono::system_clock::time_point;
+    using Duration = std::chrono::system_clock::duration;
 
     SessionManager() = default;
     SessionManager(const SessionManager&) = delete;
@@ -24,7 +27,17 @@ public:
     CustomResponse invoke_session_function(const std::string_view& query, const std::string_view& cookie, Func func);
 
 private:
+    void clean_stalled_sessions(const TimePoint& now);
+
     SessionIdGenerator m_session_id_generator {};
 
-    std::unordered_map<std::string, Session> m_buffer {};
+    struct SessionData
+    {
+        SessionData();
+
+        Session session;
+        TimePoint last_invoke_timepoint;
+    };
+
+    std::unordered_map<std::string, SessionData> m_buffer {};
 };

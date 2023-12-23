@@ -19,8 +19,8 @@ CustomResponse Session::handle_parameter_set(const std::string_view& query)
     {
         if (res.size() == 3)
         {
-            size_t idx = std::stoi( res[1].str() );
-            double value = std::stod( res[2].str() );
+            const size_t idx = std::stoi( res[1].str() );
+            const double value = std::stod( res[2].str() );
 
             if (idx < m_buffer.size())
             {
@@ -107,8 +107,6 @@ CustomResponse Session::compute(const std::string_view&)
                     m_buffer[1]
                 )
             );
-
-
         }
         else
         {

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <sstream>
+#include "config.hpp"
 
 class CapdProcessParams
 {
@@ -18,7 +19,7 @@ public:
         unsigned decimal_places)
     {
         std::stringstream ss {};
-        ss << "backend/capd_backend ";
+        ss << Config::get().get_backend_process_path() << ' ';
         ss << session_id << ' ';
         ss << process_str_param(func_str, "formula string")  << ' ';
         ss << process_str_param(initial_condition_values_str, "initial condition values string")  << ' ';

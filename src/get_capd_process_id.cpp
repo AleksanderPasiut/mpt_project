@@ -3,18 +3,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stream_wrapper.hpp"
+#include "config.hpp"
 
 #include <iostream>
 #include <regex>
 
+static std::string get_capd_pid_command()
+{
+    std::stringstream ss {};
+    ss << "ps a | grep ";
+    ss << Config::get().get_backend_process_path();
+    return ss.str();
+}
+
 pid_t get_capd_pid(const std::string_view& session_id)
 {
-    StreamWrapper ps_pid_getter("ps a | grep backend/capd_backend");
+    StreamWrapper ps_pid_getter( get_capd_pid_command() );
 
     std::string ps_pid_resp {};
     ps_pid_getter.read(ps_pid_resp, 65536);
 
-    std::stringstream ss;
+    std::stringstream ss {};
     ss.str(ps_pid_resp);
 
     while (true)
@@ -39,7 +48,7 @@ pid_t get_capd_pid(const std::string_view& session_id)
                 {
                     const std::string app_str = results[2].str();
 
-                    if (app_str == "backend/capd_backend")
+                    if (app_str == Config::get().get_backend_process_path())
                     {
                         const std::string pid_str = results[1].str();
                         pid_t ret = std::stoi(pid_str);

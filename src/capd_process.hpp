@@ -17,7 +17,7 @@ public:
     CapdProcess(const CapdProcess&) = delete;
     CapdProcess& operator= (const CapdProcess&) = delete;
 
-    State get_state() const noexcept
+    Process::State get_state() const noexcept
     {
         return m_process.get_state();
     }

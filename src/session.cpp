@@ -56,18 +56,18 @@ CustomResponse Session::get_string_output(const std::string_view&)
     {
         switch (m_capd_process_ptr->get_state())
         {
-            case State::Ready:
+            case Process::State::Ready:
             {
                 m_string_output = m_capd_process_ptr->get_and_clear_output();
                 m_capd_process_ptr.reset();
                 break;
             }
-            case State::Waiting:
+            case Process::State::Waiting:
             {
                 m_string_output = "Computing...";
                 break;
             }
-            case State::ErrorTimeout:
+            case Process::State::ErrorTimeout:
             {
                 m_string_output = "Computation timeout reached!";
                 m_capd_process_ptr.reset();

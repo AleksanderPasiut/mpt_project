@@ -27,9 +27,9 @@ public:
         ErrorUnknown
     };
 
-    Process(const std::string& command, size_t max_output_size)
+    Process(const std::string& command, size_t max_output_size, int timeout_ms)
         : m_stream_wrapper( command.c_str() )
-        , m_monitor_thread( &Process::output_monitor, this )
+        , m_monitor_thread( &Process::output_monitor, this, timeout_ms )
         , m_max_output_size( max_output_size )
     {}
 
@@ -57,13 +57,13 @@ public:
     }
 
 private:
-    void output_monitor()
+    void output_monitor(int timeout_ms)
     {
         pollfd pollfds[1];
         pollfds[0].fd = m_stream_wrapper.get_fd();
         pollfds[0].events = POLLIN;
 
-        const int ready = poll(pollfds, 1, 5000);
+        const int ready = poll(pollfds, 1, timeout_ms);
 
         if (ready == -1)
         {

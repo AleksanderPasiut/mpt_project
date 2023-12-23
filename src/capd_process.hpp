@@ -7,11 +7,16 @@
 #include "process.hpp"
 
 #include "capd_process.params.hpp"
+#include "config.hpp"
 
 class CapdProcess
 {
 public:
-    CapdProcess(const CapdProcessParams& params) : m_process(params.get_cmd(), 1024)
+    CapdProcess(const CapdProcessParams& params)
+        : m_process(
+            params.get_cmd(),
+            Config::get().get_max_capd_process_output_length(),
+            Config::get().get_capd_process_timeout_ms())
     {}
 
     CapdProcess(const CapdProcess&) = delete;

@@ -15,8 +15,9 @@ class SessionManager
 public:
     using Func = CustomResponse(Session::*)(const std::string_view& query, const std::string_view& cookie);
 
-    SessionManager()
-    {}
+    SessionManager() = default;
+    SessionManager(const SessionManager&) = delete;
+    SessionManager& operator= (const SessionManager&) = delete;
 
     std::string initialize();
 

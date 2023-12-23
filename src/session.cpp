@@ -3,7 +3,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "session.hpp"
+#include "get_capd_process_id.hpp"
 
+#include <signal.h>
 #include <regex>
 #include <sstream>
 
@@ -70,12 +72,14 @@ CustomResponse Session::get_string_output(const std::string_view&)
             case Process::State::ErrorTimeout:
             {
                 m_string_output = "Computation timeout reached!";
+                kill_capd_process();
                 m_capd_process_ptr.reset();
                 break;
             }
             default:
             {
                 m_string_output = "Unknown computation error!";
+                kill_capd_process();
                 m_capd_process_ptr.reset();
                 break;
             }
@@ -103,6 +107,8 @@ CustomResponse Session::compute(const std::string_view&)
                     m_buffer[1]
                 )
             );
+
+
         }
         else
         {
@@ -119,5 +125,21 @@ CustomResponse Session::compute(const std::string_view&)
     }
 
     return CustomResponse(200);
+}
+
+void Session::kill_capd_process()
+{
+    std::cout << __func__ << '\n';
+
+    const pid_t capd_process_pid = get_capd_pid(this->m_id);
+    if (capd_process_pid > -1)
+    {
+        std::cout << "killing process " << capd_process_pid << '\n';
+        kill(capd_process_pid, 9);
+    }
+    else
+    {
+        std::cout << "CAPD process pid not found!\n";
+    }
 }
 

@@ -36,14 +36,23 @@ void generate_qr_code_bmp(const std::string& port)
     hostname_cmd.read(hostname_cmd_resp, 1024);
 
     std::regex re { R"(([0-9\.]*))" };
-    std::smatch res {};
-    if (std::regex_search(hostname_cmd_resp, res, re))
+    std::smatch results {};
+    if (std::regex_search(hostname_cmd_resp, results, re))
     {
-        if (res.size() == 2)
+        if (results.size() == 2)
         {
-            const std::string hostname = res[1];
+            const std::string hostname = results[1];
             const std::string url = "http://" + hostname + ":" + port;
             run_qr_gen(url.c_str(), "qr_code.bmp");
         }
+        else
+        {
+            std::cerr << __func__ << " unexpected regex results size! " << results.size() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << __func__ << " regex search failed!\n";
+    }
+
 }

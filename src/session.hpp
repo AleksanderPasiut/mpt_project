@@ -40,6 +40,8 @@ public:
     CustomResponse compute(const std::string_view&);
 
 private:
+    void kill_capd_process();
+
     const std::string m_id {};
     
     std::array<unsigned, 2> m_buffer { 20, 15 };

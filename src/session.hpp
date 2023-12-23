@@ -10,7 +10,7 @@
 #include <array>
 #include <iostream>
 
-class ParametersBuffer
+class Session
 {
 public:
     CustomResponse handle_parameter_set(const std::string_view& query, const std::string_view& cookie);

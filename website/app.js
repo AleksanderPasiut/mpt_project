@@ -3,11 +3,7 @@ slider_busy_idx = -1
 function onload()
 {
     setInterval(heartbeat, 200)
-}
-
-function onunload()
-{
-    fetch('/terminate', { method: "POST" })
+    fetch('/initialize', { method: "POST" })
 }
 
 async function heartbeat()

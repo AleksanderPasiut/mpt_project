@@ -28,7 +28,7 @@ CustomResponse SessionManager::invoke_session_function(const std::string_view& q
         std::cout << __func__ << " " << session_id << '\n';
 
         Session& parameters_buffer = it->second;
-        return std::invoke(func, &parameters_buffer, query, cookie);
+        return std::invoke(func, &parameters_buffer, query);
     }
     else
     {

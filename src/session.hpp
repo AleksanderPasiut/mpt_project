@@ -19,11 +19,11 @@ public:
 
     Session(Session&&) = default;
 
-    CustomResponse handle_parameter_set(const std::string_view& query, const std::string_view& cookie);
-    CustomResponse handle_parameters_get(const std::string_view& query, const std::string_view& cookie);
+    CustomResponse handle_parameter_set(const std::string_view& query);
+    CustomResponse handle_parameters_get(const std::string_view& query);
 
     template<unsigned idx>
-    CustomResponse set_string(const std::string_view& payload, const std::string_view& cookie)
+    CustomResponse set_string(const std::string_view& payload)
     {
         std::cout << __func__ <<  '\n';
 
@@ -31,9 +31,9 @@ public:
         return CustomResponse(200);
     }
 
-    CustomResponse get_string_output(const std::string_view&, const std::string_view& cookie);
+    CustomResponse get_string_output(const std::string_view&);
 
-    CustomResponse compute(const std::string_view&, const std::string_view& cookie);
+    CustomResponse compute(const std::string_view&);
 
 private:
     std::array<unsigned, 2> m_buffer { 20, 15 };

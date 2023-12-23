@@ -8,7 +8,7 @@
 #include <regex>
 #include <sstream>
 
-CustomResponse Session::handle_parameter_set(const std::string_view& query, const std::string_view& cookie)
+CustomResponse Session::handle_parameter_set(const std::string_view& query)
 {
     std::cout << __func__ << ' ' << query << '\n';
 
@@ -33,7 +33,7 @@ CustomResponse Session::handle_parameter_set(const std::string_view& query, cons
     return CustomResponse(500);
 }
 
-CustomResponse Session::handle_parameters_get(const std::string_view&, const std::string_view& cookie)
+CustomResponse Session::handle_parameters_get(const std::string_view&)
 {
     std::cout << __func__ << '\n';
 
@@ -49,14 +49,14 @@ CustomResponse Session::handle_parameters_get(const std::string_view&, const std
     return CustomResponse(200, "text/plain", ss.str());
 }
 
-CustomResponse Session::get_string_output(const std::string_view&, const std::string_view& cookie)
+CustomResponse Session::get_string_output(const std::string_view&)
 {
     std::cout << __func__ << '\n';
 
     return CustomResponse(200, "text/plain", m_string_output);
 }
 
-CustomResponse Session::compute(const std::string_view&, const std::string_view& cookie)
+CustomResponse Session::compute(const std::string_view&)
 {
     std::cout << __func__ << '\n';
 

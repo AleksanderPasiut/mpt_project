@@ -3,7 +3,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "session.hpp"
-#include "capd_process.hpp"
 
 #include <regex>
 #include <sstream>
@@ -53,6 +52,36 @@ CustomResponse Session::get_string_output(const std::string_view&)
 {
     std::cout << __func__ << '\n';
 
+    if (m_capd_process_ptr.get())
+    {
+        switch (m_capd_process_ptr->get_state())
+        {
+            case State::Ready:
+            {
+                m_string_output = m_capd_process_ptr->get_and_clear_output();
+                m_capd_process_ptr.reset();
+                break;
+            }
+            case State::Waiting:
+            {
+                m_string_output = "Computing...";
+                break;
+            }
+            case State::ErrorTimeout:
+            {
+                m_string_output = "Computation timeout reached!";
+                m_capd_process_ptr.reset();
+                break;
+            }
+            default:
+            {
+                m_string_output = "Unknown computation error!";
+                m_capd_process_ptr.reset();
+                break;
+            }
+        }
+    }
+
     return CustomResponse(200, "text/plain", m_string_output);
 }
 
@@ -62,18 +91,22 @@ CustomResponse Session::compute(const std::string_view&)
 
     try
     {
-        CapdProcess capd_process
+        if (m_capd_process_ptr.get() == nullptr)
         {
-            CapdProcessParams(
-                m_string_parameter[0],
-                m_string_parameter[1],
-                m_string_parameter[2],
-                m_buffer[0],
-                m_buffer[1]
-            )
-        };
-
-        m_string_output = capd_process.get_resp();
+            m_capd_process_ptr = std::make_unique<CapdProcess>(
+                CapdProcessParams(
+                    m_string_parameter[0],
+                    m_string_parameter[1],
+                    m_string_parameter[2],
+                    m_buffer[0],
+                    m_buffer[1]
+                )
+            );
+        }
+        else
+        {
+            throw std::logic_error("Busy");
+        }
     }
     catch (const std::exception& e)
     {
@@ -81,7 +114,7 @@ CustomResponse Session::compute(const std::string_view&)
     }
     catch (...)
     {
-        m_string_output = std::string("Computation failed due to unknown exception");
+        m_string_output = std::string("Computation failed due to unknown exception!");
     }
 
     return CustomResponse(200);

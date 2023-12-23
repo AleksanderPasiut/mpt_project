@@ -11,15 +11,20 @@
 class CapdProcess
 {
 public:
-    CapdProcess(const CapdProcessParams& params) : m_process(params.get_cmd())
+    CapdProcess(const CapdProcessParams& params) : m_process(params.get_cmd(), 1024)
     {}
 
     CapdProcess(const CapdProcess&) = delete;
     CapdProcess& operator= (const CapdProcess&) = delete;
 
-    std::string get_resp()
+    State get_state() const noexcept
     {
-        return m_process.readsome(1024);
+        return m_process.get_state();
+    }
+
+    std::string get_and_clear_output()
+    {
+        return m_process.get_and_clear_output();
     }
 
 private:

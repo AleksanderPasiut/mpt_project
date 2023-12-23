@@ -31,8 +31,12 @@ CustomResponse get_qr_code(const std::string_view& query, const std::string_view
 
 void generate_qr_code_bmp(const std::string& port)
 {
-    Process hostname_cmd("hostname -I");
-    const std::string hostname_cmd_resp = hostname_cmd.readsome(1024);
+    StreamWrapper hostname_cmd("hostname -I");
+
+    std::string hostname_cmd_resp {};
+    hostname_cmd_resp.reserve(1024);
+    size_t ret = hostname_cmd.read(&hostname_cmd_resp[0], hostname_cmd_resp.capacity());
+    hostname_cmd_resp.resize(ret);
 
     std::regex re { R"(([0-9\.]*))" };
     std::smatch res {};

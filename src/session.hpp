@@ -5,10 +5,12 @@
 #pragma once
 
 #include "server/custom_response.hpp"
+#include "capd_process.hpp"
 
 #include <string_view>
 #include <array>
 #include <iostream>
+#include <memory>
 
 class Session
 {
@@ -40,4 +42,6 @@ private:
 
     std::array<std::string, 3> m_string_parameter {};
     std::string m_string_output {};
+
+    std::unique_ptr<CapdProcess> m_capd_process_ptr {};
 };

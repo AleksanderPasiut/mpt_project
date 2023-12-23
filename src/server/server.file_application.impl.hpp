@@ -12,7 +12,7 @@
 class ServerFileApplicationImpl
 {
 public:
-    using CustomCallback = std::function<CustomResponse(std::string_view)>;
+    using CustomCallback = std::function<CustomResponse(std::string_view, std::string_view)>;
 
     ServerFileApplicationImpl(const std::filesystem::path& root) : m_root(root)
     {}
@@ -23,7 +23,12 @@ public:
     virtual ~ServerFileApplicationImpl() noexcept
     {}
 
-    void handle_request(std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents );
+    void handle_request(
+        std::stringstream& ss,
+        const std::string_view& method,
+        const std::string_view& uri,
+        const std::string_view& contents,
+        const std::string_view& cookie );
 
     void set_default_path(const std::string& default_path);
 

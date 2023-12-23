@@ -8,7 +8,7 @@
 #include <regex>
 #include <sstream>
 
-CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& query)
+CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& query, const std::string_view& cookie)
 {
     std::regex re( R"(^input([0-9]*)=([0-9\.]*)$)");
     std::match_results<std::string_view::iterator> res {};
@@ -31,7 +31,7 @@ CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& qu
     return CustomResponse(500);
 }
 
-CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&)
+CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&, const std::string_view& cookie)
 {
     std::stringstream ss {};
 
@@ -45,12 +45,12 @@ CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&)
     return CustomResponse(200, "text/plain", ss.str());
 }
 
-CustomResponse ParametersBuffer::get_string_output(const std::string_view&)
+CustomResponse ParametersBuffer::get_string_output(const std::string_view&, const std::string_view& cookie)
 {
     return CustomResponse(200, "text/plain", m_string_output);
 }
 
-CustomResponse ParametersBuffer::compute(const std::string_view&)
+CustomResponse ParametersBuffer::compute(const std::string_view&, const std::string_view& cookie)
 {
     try
     {

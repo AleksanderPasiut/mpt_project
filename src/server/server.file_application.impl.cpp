@@ -55,6 +55,10 @@ static void fill_custom_response(std::stringstream& ss, const CustomResponse& re
 
     if (resp.get_content_type().size() > 0)
     {
+        if (resp.get_cookie().size() > 0)
+        {
+            ss << "Set-Cookie: " << resp.get_cookie() << '\n';
+        }
         ss << "Content-Type: " << resp.get_content_type() << "\n\n";
         ss << resp.get_content();
     }
@@ -94,7 +98,12 @@ void ServerFileApplicationImpl::fill_file_response(std::stringstream& ss, const 
 }
 
 
-void ServerFileApplicationImpl::handle_request(std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents )
+void ServerFileApplicationImpl::handle_request(
+    std::stringstream& ss,
+    const std::string_view& method,
+    const std::string_view& uri,
+    const std::string_view& contents,
+    const std::string_view& cookie )
 {
     const Uri get_uri(uri);
 
@@ -103,7 +112,7 @@ void ServerFileApplicationImpl::handle_request(std::stringstream& ss, const std:
         auto it = m_custom_callbacks.find(std::string(get_uri.get_path()));
         if (it != m_custom_callbacks.end())
         {
-            fill_custom_response(ss, (it->second)(get_uri.get_query()));
+            fill_custom_response(ss, (it->second)(get_uri.get_query(), cookie));
         }
         else
         {
@@ -116,7 +125,7 @@ void ServerFileApplicationImpl::handle_request(std::stringstream& ss, const std:
         auto it = m_on_post_callbacks.find(std::string(get_uri.get_path()));
         if (it != m_on_post_callbacks.end())
         {
-            fill_custom_response(ss, (it->second)(contents));
+            fill_custom_response(ss, (it->second)(contents, cookie));
         }
     }
 }

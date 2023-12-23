@@ -11,9 +11,14 @@ ServerFileApplication::ServerFileApplication(const std::string_view& port, const
     m_shutdown_request.test_and_set();
 
     m_server.set_on_request_callback(
-        [this](std::stringstream& ss, const std::string_view& method, const std::string_view& uri, const std::string_view& contents ) -> void
+        [this](
+            std::stringstream& ss,
+            const std::string_view& method,
+            const std::string_view& uri,
+            const std::string_view& contents,
+            const std::string_view& cookie ) -> void
     {
-        m_impl.handle_request(ss, method, uri, contents);
+        m_impl.handle_request(ss, method, uri, contents, cookie);
     });
 }
 

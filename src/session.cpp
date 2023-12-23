@@ -2,13 +2,13 @@
 // Author: Aleksander M. Pasiut
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "parameters_buffer.hpp"
+#include "session.hpp"
 #include "capd_process.hpp"
 
 #include <regex>
 #include <sstream>
 
-CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& query, const std::string_view& cookie)
+CustomResponse Session::handle_parameter_set(const std::string_view& query)
 {
     std::cout << __func__ << ' ' << query << '\n';
 
@@ -33,7 +33,7 @@ CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& qu
     return CustomResponse(500);
 }
 
-CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&, const std::string_view& cookie)
+CustomResponse Session::handle_parameters_get(const std::string_view&)
 {
     std::cout << __func__ << '\n';
 
@@ -49,14 +49,14 @@ CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&, 
     return CustomResponse(200, "text/plain", ss.str());
 }
 
-CustomResponse ParametersBuffer::get_string_output(const std::string_view&, const std::string_view& cookie)
+CustomResponse Session::get_string_output(const std::string_view&)
 {
     std::cout << __func__ << '\n';
 
     return CustomResponse(200, "text/plain", m_string_output);
 }
 
-CustomResponse ParametersBuffer::compute(const std::string_view&, const std::string_view& cookie)
+CustomResponse Session::compute(const std::string_view&)
 {
     std::cout << __func__ << '\n';
 

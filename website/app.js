@@ -1,30 +1,40 @@
 slider_busy_idx = -1
+heartbeat_interval_id = -1
 
 function onload()
 {
-    setInterval(heartbeat, 200)
+    heartbeat_interval_id = setInterval(heartbeat, 500)
     fetch('/initialize', { method: "POST" })
 }
 
 async function heartbeat()
 {
-    response = await fetch('/values.txt', { method: "GET" })
-    values_str = await response.text()
-    values = values_str.split(';')
-
-    for (idx = 0; idx < values.length; ++idx)
+    try
     {
-        if (idx != slider_busy_idx)
-        {
-            v = parseInt( values[idx] )
-            document.getElementById('input'+idx).value = v
-            document.getElementById('feedback'+idx).value = v
-        }
-    }
+        response = await fetch('/values.txt', { method: "GET" })
+        values_str = await response.text()
+        values = values_str.split(';')
 
-    response = await fetch('/string.txt', { method: "GET" })
-    str = await response.text()
-    document.getElementById('output').value = str
+        for (idx = 0; idx < values.length; ++idx)
+        {
+            if (idx != slider_busy_idx)
+            {
+                v = parseInt( values[idx] )
+                document.getElementById('input'+idx).value = v
+                document.getElementById('feedback'+idx).value = v
+            }
+        }
+
+        response = await fetch('/string.txt', { method: "GET" })
+        str = await response.text()
+        document.getElementById('output').value = str
+    }
+    catch (error)
+    {
+        document.getElementById('output').value = "Connection to server lost!"
+        clearInterval(heartbeat_interval_id);
+        heartbeat_interval_id = -1
+    }      
 }
 
 function onsliding(idx)

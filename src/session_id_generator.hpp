@@ -11,6 +11,10 @@
 class SessionIdGenerator
 {
 public:
+    SessionIdGenerator() = default;
+    SessionIdGenerator(const SessionIdGenerator&) = delete;
+    SessionIdGenerator& operator= (const SessionIdGenerator&) = delete;
+
     std::string get()
     {
         std::stringstream ss {};

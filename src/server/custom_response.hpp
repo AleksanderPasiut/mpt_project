@@ -19,6 +19,13 @@ public:
         , m_content(content)
     {}
 
+    CustomResponse(unsigned code, std::string_view content_type, std::string content, std::string cookie)
+        : m_code(code)
+        , m_content_type(content_type)
+        , m_content(content)
+        , m_cookie(cookie)
+    {}
+
     unsigned get_code() const
     {
         return m_code;
@@ -34,9 +41,14 @@ public:
         return m_content;
     }
 
-private:
-    unsigned m_code;
-    std::string_view m_content_type;
-    std::string m_content;
+    const std::string& get_cookie() const
+    {
+        return m_cookie;
+    }
 
+private:
+    unsigned m_code ;
+    std::string_view m_content_type {};
+    std::string m_content {};
+    std::string m_cookie {};
 };

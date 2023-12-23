@@ -18,6 +18,7 @@ public:
         std::stringstream&,
         const std::string_view&,
         const std::string_view&,
+        const std::string_view&,
         const std::string_view&)>;
 
     OnRequestNotifier()

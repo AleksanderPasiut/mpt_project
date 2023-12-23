@@ -17,6 +17,8 @@ public:
     Session(const Session&) = delete;
     Session& operator= (const Session&) = delete;
 
+    Session(Session&&) = default;
+
     CustomResponse handle_parameter_set(const std::string_view& query, const std::string_view& cookie);
     CustomResponse handle_parameters_get(const std::string_view& query, const std::string_view& cookie);
 

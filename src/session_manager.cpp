@@ -11,9 +11,9 @@
 
 std::string SessionManager::initialize()
 {
-    std::string const cookie_data = m_session_id_generator.get();
+    std::string&& cookie_data = m_session_id_generator.get();
 
-    m_buffer[cookie_data] = Session();
+    m_buffer.emplace( cookie_data, Session() );
 
     return cookie_data;
 }

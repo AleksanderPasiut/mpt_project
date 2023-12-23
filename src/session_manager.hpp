@@ -33,7 +33,7 @@ private:
 
     struct SessionData
     {
-        SessionData();
+        SessionData(std::string id);
 
         Session session;
         TimePoint last_invoke_timepoint;

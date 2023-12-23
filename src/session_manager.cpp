@@ -12,9 +12,9 @@
 
 std::string SessionManager::initialize()
 {
-    std::string&& cookie_data = m_session_id_generator.get();
+    std::string cookie_data = m_session_id_generator.get();
 
-    m_buffer.emplace( cookie_data, SessionData() );
+    m_buffer.emplace( cookie_data, SessionData(cookie_data) );
 
     return cookie_data;
 }
@@ -68,7 +68,7 @@ void SessionManager::clean_stalled_sessions(const TimePoint& now)
     }
 }
 
-SessionManager::SessionData::SessionData()
-    : session()
+SessionManager::SessionData::SessionData(std::string id)
+    : session(id)
     , last_invoke_timepoint( std::chrono::system_clock::now() )
 {}

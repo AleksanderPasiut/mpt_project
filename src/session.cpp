@@ -95,7 +95,7 @@ CustomResponse Session::compute(const std::string_view&)
         {
             m_capd_process_ptr = std::make_unique<CapdProcess>(
                 CapdProcessParams(
-                    "DummySessionId",
+                    m_id,
                     m_string_parameter[0],
                     m_string_parameter[1],
                     m_string_parameter[2],

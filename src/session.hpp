@@ -15,7 +15,9 @@
 class Session
 {
 public:
-    Session() = default;
+    Session(std::string id) : m_id(id)
+    {}
+
     Session(const Session&) = delete;
     Session& operator= (const Session&) = delete;
 
@@ -38,6 +40,8 @@ public:
     CustomResponse compute(const std::string_view&);
 
 private:
+    const std::string m_id {};
+    
     std::array<unsigned, 2> m_buffer { 20, 15 };
 
     std::array<std::string, 3> m_string_parameter {};

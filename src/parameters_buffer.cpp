@@ -10,6 +10,8 @@
 
 CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& query, const std::string_view& cookie)
 {
+    std::cout << __func__ << ' ' << query << '\n';
+
     std::regex re( R"(^input([0-9]*)=([0-9\.]*)$)");
     std::match_results<std::string_view::iterator> res {};
     if ( std::regex_match(query.begin(), query.end(), res, re) )
@@ -33,6 +35,8 @@ CustomResponse ParametersBuffer::handle_parameter_set(const std::string_view& qu
 
 CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&, const std::string_view& cookie)
 {
+    std::cout << __func__ << '\n';
+
     std::stringstream ss {};
 
     auto it = m_buffer.begin();
@@ -47,11 +51,15 @@ CustomResponse ParametersBuffer::handle_parameters_get(const std::string_view&, 
 
 CustomResponse ParametersBuffer::get_string_output(const std::string_view&, const std::string_view& cookie)
 {
+    std::cout << __func__ << '\n';
+
     return CustomResponse(200, "text/plain", m_string_output);
 }
 
 CustomResponse ParametersBuffer::compute(const std::string_view&, const std::string_view& cookie)
 {
+    std::cout << __func__ << '\n';
+
     try
     {
         CapdProcess capd_process

@@ -8,6 +8,7 @@
 
 #include <string_view>
 #include <array>
+#include <iostream>
 
 class ParametersBuffer
 {
@@ -18,6 +19,8 @@ public:
     template<unsigned idx>
     CustomResponse set_string(const std::string_view& payload, const std::string_view& cookie)
     {
+        std::cout << __func__ <<  '\n';
+
         m_string_parameter[idx] = payload;
         return CustomResponse(200);
     }

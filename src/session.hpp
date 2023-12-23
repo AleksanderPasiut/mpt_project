@@ -5,15 +5,19 @@
 #pragma once
 
 #include "server/custom_response.hpp"
+#include "capd_process.hpp"
 
 #include <string_view>
 #include <array>
 #include <iostream>
+#include <memory>
 
 class Session
 {
 public:
-    Session() = default;
+    Session(std::string id) : m_id(id)
+    {}
+
     Session(const Session&) = delete;
     Session& operator= (const Session&) = delete;
 
@@ -36,8 +40,14 @@ public:
     CustomResponse compute(const std::string_view&);
 
 private:
+    void kill_capd_process();
+
+    const std::string m_id {};
+    
     std::array<unsigned, 2> m_buffer { 20, 15 };
 
     std::array<std::string, 3> m_string_parameter {};
     std::string m_string_output {};
+
+    std::unique_ptr<CapdProcess> m_capd_process_ptr {};
 };

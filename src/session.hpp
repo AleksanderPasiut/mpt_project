@@ -13,6 +13,10 @@
 class Session
 {
 public:
+    Session() = default;
+    Session(const Session&) = delete;
+    Session& operator= (const Session&) = delete;
+
     CustomResponse handle_parameter_set(const std::string_view& query, const std::string_view& cookie);
     CustomResponse handle_parameters_get(const std::string_view& query, const std::string_view& cookie);
 

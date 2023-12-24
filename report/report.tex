@@ -1,32 +1,45 @@
 \documentclass[12pt, a4paper]{article}
 
+\usepackage{tikz}
+\usepackage{hyperref}
+
 \title{CAPD-based web application}
 \author{Aleksander Pasiut}
 
 \begin{document}
 \maketitle
 
-\subsection*{PhD project overview}
-The topic of my PhD project is "Computer assisted proofs in dynamical systems" and the goal is to prove the existence of a family of orbits oscillating to collision in the planar circular restricted three body problem. In other words, we provide a rigorous proof of the existence of a certain family of solutions of a particular ordinary differential equation. One of the tools that we use is a CAPD library. It is a C++ numerical library that features a rigorous solver for ordinary differential equations among other features.  
+\subsection*{Introduction}
+In this project we developed a web interface for a CAPD-based rigorous ODE solver. The application is hosted on a local HTTP server. The user can access the web interface with regular web browser, where they can specify the ODE problem parameters, trigger the computation and read the result. 
 
-\subsection*{MPT project}
-The project for the MPT course is partially related to the topic of my PhD. The idea is to develop a web interface for CAPD library. That way the user could access the library with an ordinary web browser, insert a differential equation and obtain the result. In order to realize this vision, the following tasks have to be performed: 
-\begin{itemize}
-\item implement general HTTP server; 
-\item implement website with a graphical user interface; 
-\item integrate CAPD library into the HTTP server. 
-\end{itemize}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.85\textwidth]{gui.png}
+    \end{center}
+    \caption{Screenshot of a web interface.}
+    \label{fig:gui}
+\end{figure}
 
-The tasks listed above form the mandatory scope of the project. The following additional features are proposed to make the application more reliable and user-friendly: 
-\begin{itemize}
-\item QR code for the ease of access;
-\item computation time limitation (to prevent the server from hanging). 
-\end{itemize}
+Simultaneous access of multiple clients is implemented. The handling of exceptions and errors thrown by the library is implemented. The application features timeout to protect from excessively long computations. For the user's convenience, the QR code containing application URL is presented (this allows quick access from another device connected to the same local network).
 
-\subsection*{Live demo}
-It is considered essential for the project to succeed to perform a live demonstration of the application that would prove it to be operational and available for the external user to access. 
+\subsection*{Prerequisites}
+Implementation of HTTP server and integration to CAPD library is done in C++ programming language (standard C++17). CMake build system is used to automate the compilation and linking. Website interface is written in HTML, CSS and JavaScript. The implementation can be build for Linux operating system only (other operating systems are not supported).
 
-\subsection*{Sources}
-http://capd.ii.uj.edu.pl/ 
+\subsection*{Functionalities overview}
+TODO
+
+\subsection*{Architecture}
+The figure \ref{fig:architecture} presents the block diagram of main components of the application and their relationships.
+
+\begin{figure}[h]
+    \includegraphics[width=\textwidth]{architecture.png}
+    \caption{Block diagram of the primary components of the application}
+    \label{fig:architecture}
+\end{figure}
+
+The application consists of two executables: Backend and Frontend. The first one is linked to CAPD library (which is build from the source code along with the entire application) and is responsible for passing ODE problem parameters to the solver and returning the result. Frontend component implements HTTP server and manages the Backend component. It is responsible for providing website files, QR code generation, session handling, launching Backend component with specified parameters, retrieving the result, error handling and computation timeout handling.
+
+\subsection*{Links and references}
+Application source code is available at \url{ https://github.com/AleksanderPasiut/mpt_project }. The information about CAPD library can be found at \url{ http://capd.ii.uj.edu.pl/ }. We emphasize that this application uses the fork of CAPD library source code, not the official release.
 
 \end{document}

@@ -2,6 +2,8 @@
 
 \usepackage{tikz}
 \usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 \title{CAPD-based web application}
 \author{Aleksander Pasiut}
@@ -25,8 +27,12 @@ Simultaneous access of multiple clients is implemented. The handling of exceptio
 \subsection*{Prerequisites}
 Implementation of HTTP server and integration to CAPD library is done in C++ programming language (standard C++17). CMake build system is used to automate the compilation and linking. Website interface is written in HTML, CSS and JavaScript. The implementation can be build for Linux operating system only (other operating systems are not supported).
 
-\subsection*{Functionalities overview}
-TODO
+\subsection*{Functionality overview}
+The primary functionality of the application is solving ODE equations with rigorous numerical interval computations. Formally, we obtain the interval vector that contains the exact value of the function $x : [0;t] \to \mathbb{R}^N$ at argument $t$, which is the solution of the equation:
+\[
+    x'(t) = f \left( x(t) \right),
+\]
+where $f : \mathbb{R}^N \to \mathbb{R}^N$ and $x(0) = x_0$. User specifies the function $f$, initial value $x_0$, integration time $t$, solver order and the number of the decimal places of the result. The decimal separator is dot ".", while the variables and vector components are separated with comma ",".
 
 \subsection*{Architecture}
 The figure \ref{fig:architecture} presents the block diagram of main components of the application and their relationships.
